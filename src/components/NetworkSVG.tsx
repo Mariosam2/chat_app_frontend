@@ -22,6 +22,9 @@ const NetworkSVG = () => {
           "0%": {
             opacity: 0,
           },
+          "5%": {
+            opacity: 0,
+          },
           "10%": {
             opacity: 0.5,
           },
@@ -31,7 +34,7 @@ const NetworkSVG = () => {
           "90%": {
             opacity: 0.5,
           },
-          "100%": {
+          "95%": {
             opacity: 0,
           },
         },

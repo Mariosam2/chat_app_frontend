@@ -8,13 +8,13 @@
 .glow.right {
   top: -280px;
   right: -280px;
-  box-shadow: -185px 185px 180px var(--color-ms-secondary);
+  box-shadow: -185px 185px 160px 20px var(--color-ms-secondary);
 }
 
 .glow.left {
   top: -280px;
   left: -280px;
-  box-shadow: 185px 185px 180px var(--color-ms-secondary);
+  box-shadow: 185px 185px 160px 20px var(--color-ms-secondary);
 }
 
 .jumbo .preview {
@@ -30,8 +30,12 @@
 
 .jumbo .call-to-action {
   cursor: pointer;
-  box-shadow: 0 0 150px 10px var(--color-ms-secondary);
-  animation: pulse 2s ease-in-out alternate-reverse infinite;
+  box-shadow: 0 0 20px 5px var(--color-ms-secondary);
+  transition: all 0.25s ease-out;
+}
+.jumbo .call-to-action:hover {
+  box-shadow: 0 0 30px 10px var(--color-ms-secondary);
+  transition: all 0.25 ease-out;
 }
 
 .feature-icon {
@@ -53,13 +57,4 @@
 .feature-icon.discover {
   background: rgba(96, 152, 248, 0.25);
   box-shadow: 2px 2px 5px 0 rgba(96, 152, 248, 0.25);
-}
-
-@keyframes pulse {
-  from {
-    box-shadow: 0 0 150px 10px var(--color-ms-secondary);
-  }
-  to {
-    box-shadow: 0 0 150px 0px var(--color-ms-secondary);
-  }
 }
