@@ -1,0 +1,65 @@
+.glow {
+  position: absolute;
+  width: 180px;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+}
+
+.glow.right {
+  top: -280px;
+  right: -280px;
+  box-shadow: -185px 185px 180px var(--color-ms-secondary);
+}
+
+.glow.left {
+  top: -280px;
+  left: -280px;
+  box-shadow: 185px 185px 180px var(--color-ms-secondary);
+}
+
+.jumbo .preview {
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+.jumbo .heading {
+  font-size: 64px;
+  font-weight: 700;
+}
+
+.jumbo .call-to-action {
+  cursor: pointer;
+  box-shadow: 0 0 150px 10px var(--color-ms-secondary);
+  animation: pulse 2s ease-in-out alternate-reverse infinite;
+}
+
+.feature-icon {
+  backdrop-filter: blur(2.5px);
+  -webkit-backdrop-filter: blur(2.5px);
+  border-radius: 10px;
+}
+
+.feature-icon.communication {
+  background: rgba(112, 225, 189, 0.25);
+  box-shadow: 2px 2px 5px 0 rgba(112, 225, 189, 0.25);
+}
+
+.feature-icon.community {
+  background: rgba(248, 222, 165, 0.3);
+  box-shadow: 2px 2px 5px 0 rgba(248, 222, 165, 0.3);
+}
+
+.feature-icon.discover {
+  background: rgba(96, 152, 248, 0.25);
+  box-shadow: 2px 2px 5px 0 rgba(96, 152, 248, 0.25);
+}
+
+@keyframes pulse {
+  from {
+    box-shadow: 0 0 150px 10px var(--color-ms-secondary);
+  }
+  to {
+    box-shadow: 0 0 150px 0px var(--color-ms-secondary);
+  }
+}

@@ -1,0 +1,21 @@
+svg .user-circle,
+svg .user-border {
+  fill: var(--color-ms-almost-white);
+}
+
+svg .user-head,
+svg .user-body {
+  fill: var(--color-ms-secondary);
+}
+
+svg .link {
+  stroke: #333;
+}
+
+svg .small-circle {
+  fill: var(--color-ms-secondary);
+  filter: drop-shadow(0 0 20px var(--color-ms-secondary));
+}
+.small-circle[data-index="3"] {
+  transform: translate(-1000px, -100px);
+}
