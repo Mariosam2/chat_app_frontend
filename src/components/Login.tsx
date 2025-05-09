@@ -1,40 +1,86 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import "./Login.css";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import logo from "../assets/logo.png";
+import axios from "axios";
+
+import { chatApi } from "../helpers/axiosInterceptor";
+import { useDispatch } from "react-redux";
+import { authenticate } from "../slices/authSlice";
+import { useSelector } from "react-redux";
+import type { RootState } from "..";
+
+interface LoginResponse {
+  success: boolean;
+  token: string;
+}
 
 const Login = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { authenticated } = useSelector((state: RootState) => state.authState);
+  const [passwordOrTextType, setPasswordOrTextType] = useState("text");
   const [password, setPassword] = useState("");
-  const [passwordCopy, setPasswordCopy] = useState(password);
+  const [emailError, setEmailError] = useState("");
+  const [email, setEmail] = useState("");
   const [passwordHidden, setPasswordHidden] = useState(false);
 
-  useEffect(() => {
-    if (!passwordHidden) {
-      setPassword(passwordCopy);
-    } else {
-      setPassword(
-        passwordCopy
-          .split("")
-          .map(() => "*")
-          .join("")
-      );
+  useLayoutEffect(() => {
+    if (authenticated) {
+      navigate("/dashboard");
     }
+  }, []);
+
+  useEffect(() => {
+    setPasswordOrTextType(passwordHidden ? "password" : "text");
   }, [passwordHidden]);
+
+  const submitLogin = async (e: React.FormEvent<HTMLElement>) => {
+    e.preventDefault();
+    setEmailError("");
+    console.log("submit");
+    const userToLogIn = {
+      email,
+      username: null,
+      password,
+    };
+    await axios
+      .post<LoginResponse>(
+        import.meta.env.VITE_BASE_URL + "/api/auth/login",
+        userToLogIn,
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        if (res.data.success) {
+          //save the token and redirect to dashboard
+          chatApi.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${res.data.token}`;
+          dispatch(authenticate());
+        }
+      })
+      .catch((err) => {
+        if (err.response.data.invalid_field) {
+          setEmailError(err.response.data.message);
+        } else {
+          navigate(
+            `/error/${err.response.status}/${err.response.data.message}`
+          );
+        }
+      });
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const changedEmail = e.target.value;
+    setEmail(changedEmail);
+  };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const changedPassword = e.target.value;
-
-    setPasswordCopy(changedPassword);
-    if (!passwordHidden) {
-      setPassword(changedPassword);
-    } else {
-      const hiddenPassword = changedPassword
-        .split("")
-        .map(() => "*")
-        .join("");
-      setPassword(hiddenPassword);
-    }
+    setPassword(changedPassword);
   };
 
   const toggleEye = () => {
@@ -67,17 +113,26 @@ const Login = () => {
         </NavLink>
         <div className="flex flex-col w-xs text-ms-almost-white  ">
           <h2 className="heading ps-4 pb-4">Log in</h2>
-          <form action="" className="bg-ms-dark p-4 rounded-2xl">
+          <form
+            onSubmit={submitLogin}
+            action=""
+            className="bg-ms-dark p-4 rounded-2xl"
+          >
             <div className=" flex flex-col py-3">
               <label htmlFor="email" className="pb-2 font-light">
                 Email address
               </label>
               <input
+                onChange={handleEmailChange}
                 className="bg-ms-almost-white p-2 focus:outline-none  rounded-xl text-ms-dark"
                 type="email"
+                required
                 name="email"
                 id="email"
               />
+              <span className="text-red-500 text-sm h-[20px] p-0.5">
+                {emailError.length > 0 ? emailError : ""}
+              </span>
             </div>
             <div className=" flex flex-col py-3">
               <label htmlFor="password" className="pb-2 font-light">
@@ -87,21 +142,29 @@ const Login = () => {
                 <input
                   onChange={handlePasswordChange}
                   value={password}
-                  className="w-full bg-ms-almost-white p-2 focus:outline-none rounded-xl text-ms-dark"
-                  type="text"
+                  className={`w-full ${
+                    passwordOrTextType === "password" ? "font-extrabold" : ""
+                  } bg-ms-almost-white p-2 focus:outline-none rounded-xl text-ms-dark`}
+                  type={passwordOrTextType}
                   name="password"
                   id="password"
+                  required
                 />
+
                 <ShowEye />
               </div>
+              <span className="text-red-500 text-sm h-[20px] p-0.5">
+                password errors to implement
+              </span>
             </div>
 
-            <div
+            <button
+              type="submit"
               id="submit"
-              className="px-6 py-3 mt-10 text-center font-medium bg-ms-secondary rounded-xl"
+              className="px-6 w-full py-3 mt-10 text-center font-medium bg-ms-secondary rounded-xl"
             >
               Sign in
-            </div>
+            </button>
           </form>
           <span className="font-light mt-3 ps-4">
             Don't have an account?{" "}
