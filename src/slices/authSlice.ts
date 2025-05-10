@@ -5,28 +5,37 @@ import type { AuthUser } from "../helpers/axiosInterceptor";
 interface authState {
   authenticated: boolean;
   authUser: AuthUser | null;
+  loading: boolean;
 }
 
 const initialState: authState = {
   authenticated: false,
   authUser: null,
+  loading: true,
 };
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    isLoading: (state: authState) => {
+      state.loading = true;
+    },
+    finishedLoading: (state: authState) => {
+      state.loading = false;
+    },
     saveAuthUser: (state: authState, action: PayloadAction<AuthUser>) => {
       state.authUser = { ...action.payload };
     },
-    authenticate: (state: authState) => {
-      console.log("authenticate");
-      state.authenticated = true;
+    authenticate: (state: authState, action: PayloadAction<boolean>) => {
+      //console.log("authenticate");
+      state.authenticated = action.payload;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { saveAuthUser, authenticate } = authSlice.actions;
+export const { saveAuthUser, authenticate, isLoading, finishedLoading } =
+  authSlice.actions;
 
 export default authSlice.reducer;

@@ -23,7 +23,7 @@ chatApi.interceptors.response.use(
     return response;
   },
   (err) => {
-    console.log(err.config);
+    //console.log(err.config);
     if (
       err.response.status === 401 &&
       err.config.url !== "/api/auth/refresh-token"
@@ -32,6 +32,7 @@ chatApi.interceptors.response.use(
       return chatApi
         .get<RefreshTokenResponse>("/api/auth/refresh-token")
         .then((res) => {
+          //console.log(res);
           if (res.data.success) {
             //set the new token in an authorization header
             //console.log(res.data);
@@ -44,9 +45,11 @@ chatApi.interceptors.response.use(
           }
         })
         .catch((err) => {
+          //console.log(err);
           //if the error was caused by the refresh token route, logout the user
           return Promise.reject(err);
         });
     }
+    return Promise.reject(err);
   }
 );

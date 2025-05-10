@@ -1,22 +1,24 @@
-import { Route, Routes, useNavigate } from "react-router";
+import { Route, Routes } from "react-router";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import Chat from "./components/Chat";
 import Profile from "./components/Profile";
 import Error from "./components/Error";
 import Dashboard from "./components/Dashboard";
 import { useLocation } from "react-router";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { chatApi, type AuthUser } from "./helpers/axiosInterceptor";
 import { useDispatch } from "react-redux";
-import { authenticate, saveAuthUser } from "./slices/authSlice";
+import {
+  authenticate,
+  finishedLoading,
+  isLoading,
+  saveAuthUser,
+} from "./slices/authSlice";
 import RequireAuth from "./components/RequireAuth";
 import RequireNoAuth from "./components/RequireNoAuth";
 import { useSelector } from "react-redux";
 import type { RootState } from ".";
-
-import store from "./store";
 
 interface AuthUserResponse {
   success: boolean;
@@ -25,42 +27,50 @@ interface AuthUserResponse {
 
 function App() {
   const routePathname = useLocation().pathname;
-  const { authUser, authenticated } = useSelector(
-    (state: RootState) => state.authState
-  );
+
+  const { loading } = useSelector((state: RootState) => state.authState);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const getAuthUser = () => {
     chatApi
       .get<AuthUserResponse>("/api/users/auth/logged-in")
       .then((res) => {
-        console.log(res.data);
-        console.log("dispatch");
+        //console.log(res.data);
+        //console.log("dispatch");
         if (res.data.success) {
           //console.log("response");
           //save the logged in user in redux
-          dispatch(authenticate());
+          dispatch(authenticate(true));
           dispatch(saveAuthUser(res.data.authUser));
+          dispatch(finishedLoading());
         }
       })
       .catch((err) => {
         if (err.response) {
-          navigate(
-            `/error/${err.response.status}/${err.response.data.message}`
-          );
+          dispatch(authenticate(false));
+          dispatch(finishedLoading());
         }
       });
   };
 
-  useEffect(() => {
-    console.log(authUser, authenticated);
-  }, [authUser, authenticated]);
+  //set loading everytime before the page is printed
+  useLayoutEffect(() => {
+    dispatch(isLoading());
+  }, []);
 
+  //when components mount make the call to check authentication
   useEffect(() => {
-    getAuthUser();
+    //console.log("app level", routePathname);
+    if (routePathname !== "/") {
+      getAuthUser();
+    } else {
+      dispatch(finishedLoading());
+    }
   }, [routePathname]);
-  return (
-    <>
+
+  const RenderApp = () => {
+    return loading ? (
+      <div>Loading...</div>
+    ) : (
       <div className="">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -96,10 +106,15 @@ function App() {
               </RequireAuth>
             }
           />
-          <Route path="/chat" element={<Chat />} />
+
           <Route path="/error/:statuscode/:message" element={<Error />} />
         </Routes>
       </div>
+    );
+  };
+  return (
+    <>
+      <RenderApp />
     </>
   );
 }

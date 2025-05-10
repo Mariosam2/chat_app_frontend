@@ -39,7 +39,8 @@ const Login = () => {
   const submitLogin = async (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
     setEmailError("");
-    console.log("submit");
+    console.log("login");
+    //console.log("submit");
     const userToLogIn = {
       email,
       username: null,
@@ -59,7 +60,7 @@ const Login = () => {
           chatApi.defaults.headers.common[
             "Authorization"
           ] = `Bearer ${res.data.token}`;
-          dispatch(authenticate());
+          dispatch(authenticate(true));
         }
       })
       .catch((err) => {
