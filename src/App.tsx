@@ -11,8 +11,8 @@ import { chatApi, type AuthUser } from "./helpers/axiosInterceptor";
 import { useDispatch } from "react-redux";
 import {
   authenticate,
-  finishedLoading,
-  isLoading,
+  finishedAuthLoading,
+  authLoading,
   saveAuthUser,
 } from "./slices/authSlice";
 import RequireAuth from "./components/RequireAuth";
@@ -30,6 +30,22 @@ function App() {
 
   const { loading } = useSelector((state: RootState) => state.authState);
   const dispatch = useDispatch();
+
+  //set loading everytime before the page is printed
+  useLayoutEffect(() => {
+    dispatch(authLoading());
+  }, []);
+
+  //when components mount make the call to check authentication
+  useEffect(() => {
+    //console.log("app level", routePathname);
+    if (routePathname !== "/") {
+      getAuthUser();
+    } else {
+      dispatch(finishedAuthLoading());
+    }
+  }, [routePathname]);
+
   const getAuthUser = () => {
     chatApi
       .get<AuthUserResponse>("/api/users/auth/logged-in")
@@ -41,31 +57,16 @@ function App() {
           //save the logged in user in redux
           dispatch(authenticate(true));
           dispatch(saveAuthUser(res.data.authUser));
-          dispatch(finishedLoading());
+          dispatch(finishedAuthLoading());
         }
       })
       .catch((err) => {
-        if (err.response) {
+        if (err) {
           dispatch(authenticate(false));
-          dispatch(finishedLoading());
+          dispatch(finishedAuthLoading());
         }
       });
   };
-
-  //set loading everytime before the page is printed
-  useLayoutEffect(() => {
-    dispatch(isLoading());
-  }, []);
-
-  //when components mount make the call to check authentication
-  useEffect(() => {
-    //console.log("app level", routePathname);
-    if (routePathname !== "/") {
-      getAuthUser();
-    } else {
-      dispatch(finishedLoading());
-    }
-  }, [routePathname]);
 
   const RenderApp = () => {
     return loading ? (

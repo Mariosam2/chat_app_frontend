@@ -39,7 +39,7 @@ const Login = () => {
   const submitLogin = async (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
     setEmailError("");
-    console.log("login");
+    //console.log("login");
     //console.log("submit");
     const userToLogIn = {
       email,

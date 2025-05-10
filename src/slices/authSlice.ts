@@ -18,10 +18,10 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    isLoading: (state: authState) => {
+    authLoading: (state: authState) => {
       state.loading = true;
     },
-    finishedLoading: (state: authState) => {
+    finishedAuthLoading: (state: authState) => {
       state.loading = false;
     },
     saveAuthUser: (state: authState, action: PayloadAction<AuthUser>) => {
@@ -35,7 +35,7 @@ export const authSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { saveAuthUser, authenticate, isLoading, finishedLoading } =
+export const { saveAuthUser, authenticate, authLoading, finishedAuthLoading } =
   authSlice.actions;
 
 export default authSlice.reducer;

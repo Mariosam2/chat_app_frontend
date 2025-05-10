@@ -12,6 +12,9 @@ import { useNavigate } from "react-router";
 import "./Dashboard.css";
 import Chat from "./Chat";
 import { type ChatType } from "../types";
+import logo from "../assets/logo.png";
+import MessageComponent from "./MessageComponent";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 interface ChatsResponse {
   success: true;
@@ -20,6 +23,9 @@ interface ChatsResponse {
 
 const Dashboard = () => {
   const { authUser } = useSelector((state: RootState) => state.authState);
+  const { messages, loading } = useSelector(
+    (state: RootState) => state.chatState
+  );
   const navigate = useNavigate();
   const [chats, setChats]: [ChatType[], Dispatch<SetStateAction<ChatType[]>>] =
     useState<ChatType[]>([]);
@@ -27,6 +33,7 @@ const Dashboard = () => {
     chatApi
       .get<ChatsResponse>(`/api/chats/${authUser?.uuid}`)
       .then((res) => {
+        console.log(res.data.chats);
         setChats(res.data.chats);
       })
       .catch((err) => {
@@ -34,19 +41,25 @@ const Dashboard = () => {
       });
   };
 
+  const getHoursMinutesFormatted = (stringDate: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    const formattedDate = new Date(stringDate)
+      .toLocaleDateString("it-IT", options)
+      .split(",")[1];
+
+    return formattedDate;
+  };
+
   const ShowChats = (): JSX.Element => {
     return chats.length > 0 ? (
       <>
         {chats.map((chat, index) => {
-          const options: Intl.DateTimeFormatOptions = {
-            hour: "2-digit",
-            minute: "2-digit",
-          };
-          const messageDate = new Date(
+          const messageCreatedAt = getHoursMinutesFormatted(
             chat.lastMessage?.created_at
-          ).toLocaleDateString("it-IT", options);
-
-          const messageCreatedAt = messageDate.split(",")[1];
+          );
           return (
             <Chat key={index} chat={chat} messageCreatedAt={messageCreatedAt} />
           );
@@ -57,6 +70,27 @@ const Dashboard = () => {
     );
   };
 
+  const ShowMessages = (): JSX.Element => {
+    return !loading && messages.length > 0 ? (
+      <div className="messages-container flex flex-col p-24  h-[80vh] ">
+        {messages.map((message, index) => {
+          const messageCreatedAt = getHoursMinutesFormatted(message.created_at);
+          return (
+            <MessageComponent
+              key={index}
+              message={message}
+              createdAt={messageCreatedAt}
+            />
+          );
+        })}
+      </div>
+    ) : loading ? (
+      <div className=" h-[80vh]">Loading...</div>
+    ) : (
+      <div className=" h-[80vh] text-ms-almost-white">No messages here...</div>
+    );
+  };
+
   useEffect(() => {
     if (authUser !== null) {
       getChats();
@@ -64,12 +98,29 @@ const Dashboard = () => {
   }, [authUser]);
   return (
     <section className="dashboard h-screen grid grid-cols-10 grid-row-6">
-      <div className="top-panel col-span-10 row-span-1 bg-ms-dark"></div>
-      <div className="chats-panel col-span-2 row-span-5 row-start-2 bg-ms-dark grid grid-rows-6">
+      <div className="top-panel col-span-10 row-span-1 bg-ms-dark flex items-center p-4">
+        <div id="logo" className="max-w-[120px]">
+          <img src={logo} alt="" />
+        </div>
+        {/* TODO: user edit panel */}
+        <div className="user-profile ms-auto flex items-center  font-light text-ms-almost-white">
+          <div className="profile-picture max-w-[40px] me-4">
+            <img
+              src={import.meta.env.VITE_BASE_URL + authUser?.profile_picture}
+              alt=""
+            />
+          </div>
+          <div className="username">{authUser?.username}</div>
+          <PencilSquareIcon className="size-5 mx-2 cursor-pointer" />
+        </div>
+      </div>
+      <div className="chats-panel  col-span-2 row-span-5 row-start-2 bg-ms-dark grid grid-rows-6">
         <ShowChats />
       </div>
-      <div className="chat-panel col-span-7 row-span-5 row-start-2 bg-ms-darker"></div>
-      <div className="side-panel col-span-1 row-span-5 row-start-2"></div>
+      <div className="chat-panel col-span-7 row-span-5 row-start-2  bg-ms-darker">
+        <ShowMessages />
+      </div>
+      <div className="side-panel col-span-1 row-span-5 row-start-2 bg-ms-secondary"></div>
     </section>
   );
 };

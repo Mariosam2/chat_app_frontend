@@ -2,6 +2,22 @@ import { useSelector } from "react-redux";
 import { chatApi } from "../helpers/axiosInterceptor";
 import { type ChatType } from "../types";
 import type { RootState } from "../index";
+import { useDispatch } from "react-redux";
+import {
+  chatLoading,
+  finishedChatLoading,
+  setActiveChat,
+  setMessages,
+  type ChatState,
+} from "../slices/chatSlice";
+import { useNavigate } from "react-router";
+
+import "./Chat.css";
+
+interface MessagesResponse extends ChatState {
+  success: boolean;
+}
+
 const Chat = ({
   chat,
   messageCreatedAt,
@@ -9,21 +25,39 @@ const Chat = ({
   chat: ChatType;
   messageCreatedAt: string;
 }) => {
+  const navigate = useNavigate();
   const { authUser } = useSelector((state: RootState) => state.authState);
-  const showMessages = (chatUUID: string, userUUID: string) => {
-    chatApi
-      .get(`/api/messages/${userUUID}/${chatUUID}`)
-      .then((res) => {
-        console.log(res);
-        //dispatch setMessages
-      })
-      .catch();
+  const { activeChat } = useSelector((state: RootState) => state.chatState);
+  const dispatch = useDispatch();
+  const getMessages = (userUUID: string, chatUUID: string) => {
+    dispatch(setActiveChat(chat.uuid));
+    if (activeChat !== chat.uuid) {
+      dispatch(chatLoading());
+      chatApi
+        .get<MessagesResponse>(`/api/messages/${userUUID}/${chatUUID}`)
+        .then((res) => {
+          if (res.data.success) {
+            //dispatch setMessages
+            console.log(res.data);
+            dispatch(setMessages(res.data.messages));
+            dispatch(finishedChatLoading());
+          }
+        })
+        .catch((err) => {
+          finishedChatLoading();
+          navigate(
+            `/error/${err.response.status}/${err.response.data.message}`
+          );
+        });
+    }
   };
 
   return (
     <div
-      onClick={() => showMessages(authUser!.uuid, chat.uuid)}
-      className="chat bg-ms-darker row-span-1 flex items-center px-4 cursor-pointer"
+      onClick={() => getMessages(authUser!.uuid, chat.uuid)}
+      className={`chat bg-ms-darker row-span-1 flex items-center px-4 cursor-pointer border-e border-ms-dark ${
+        activeChat === chat.uuid ? "active" : ""
+      }`}
     >
       <div className="receiver  ">
         <div className="profile-picture max-w-[60px] pe-1.5 ">

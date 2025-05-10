@@ -1,4 +1,3 @@
-.chat:hover {
-  background-color: var(--color-ms-dark);
-  transition: all 0.25s ease-out;
+.messages-container {
+  overflow-y: scroll;
 }

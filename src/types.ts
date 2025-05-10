@@ -2,6 +2,7 @@ export type Message = {
   uuid: string;
   content: string;
   created_at: string;
+  status: string;
 };
 
 export type User = {

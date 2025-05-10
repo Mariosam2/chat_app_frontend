@@ -1,0 +1,11 @@
+.chat {
+  transition: all 0.25s ease-out;
+}
+
+.chat:hover {
+  background-color: var(--color-ms-dark);
+  transition: all 0.25s ease-out;
+}
+.chat.active {
+  background-color: var(--color-ms-dark);
+}
