@@ -12,7 +12,7 @@ const MessageComponent = ({
       className={`message relative max-w-xs w-max my-4 rounded-4xl pb-7 p-4 pe-8  ${
         message.status === "sent"
           ? "bg-ms-almost-white text-ms-dark me-auto"
-          : "bg-ms-secondary text-ms-almost-white ms-auto"
+          : "  bg-ms-secondary text-ms-almost-white ms-auto"
       }`}
     >
       {message.content}

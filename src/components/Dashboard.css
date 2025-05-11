@@ -1,3 +1,21 @@
 .messages-container {
   overflow-y: scroll;
 }
+
+.messages-container {
+  background-image: url("../assets/bg-chat.svg");
+  background-size: 20%;
+  background-repeat: repeat;
+}
+
+.user-profile .edit,
+.logout {
+  box-shadow: 0 0 20px 5px var(--color-ms-secondary);
+  transition: all 0.25s ease-out;
+}
+
+.user-profile .edit:hover,
+.logout:hover {
+  box-shadow: 0 0 30px 10px var(--color-ms-secondary);
+  transition: all 0.25 ease-out;
+}

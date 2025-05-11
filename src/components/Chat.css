@@ -1,11 +1,24 @@
 .chat {
+  border: 0 solid transparent;
+
   transition: all 0.25s ease-out;
 }
 
 .chat:hover {
   background-color: var(--color-ms-dark);
+  border: 0 solid var(--color-ms-darker);
+
   transition: all 0.25s ease-out;
 }
 .chat.active {
+  border: 0 solid var(--color-ms-darker);
+
   background-color: var(--color-ms-dark);
+}
+
+.chat,
+.chat:hover,
+.chat.active {
+  border-top-width: 1px;
+  border-bottom-width: 1px;
 }
