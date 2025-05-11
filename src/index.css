@@ -10,6 +10,7 @@
   --color-ms-green: #70e1bd;
   --color-ms-yellow: #f8dea5;
   --color-ms-cyan: #6098f8;
+  --color-ms-layover: rgba(10, 10, 10, 0.5);
 }
 *::-webkit-scrollbar {
   background-color: transparent;

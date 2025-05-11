@@ -20,9 +20,9 @@ const Error = () => {
 
           <NavLink
             className="font-semibold w-full  inline-block text-ms-dark bg-ms-almost-white rounded-xl px-3 py-2 mt-6"
-            to={"/"}
+            to={"/dashboard"}
           >
-            Back to Home
+            Back to Dashboard
           </NavLink>
         </div>
       </div>

@@ -1,0 +1,11 @@
+.user-profile .edit,
+.logout {
+  box-shadow: 0 0 20px 5px var(--color-ms-secondary);
+  transition: all 0.25s ease-out;
+}
+
+.user-profile .edit:hover,
+.logout:hover {
+  box-shadow: 0 0 30px 10px var(--color-ms-secondary);
+  transition: all 0.25 ease-out;
+}

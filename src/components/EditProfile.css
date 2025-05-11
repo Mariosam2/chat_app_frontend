@@ -1,0 +1,13 @@
+.edit-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  transform: scale(0);
+  transition: transform 0.2s ease-in-out;
+}
+
+.edit-panel.show {
+  transform: scale(1);
+  transition: transform 0.2s ease-in-out;
+}

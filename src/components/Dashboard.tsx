@@ -14,15 +14,11 @@ import Chat from "./Chat";
 import { type ChatType } from "../types";
 import logo from "../assets/logo.png";
 import MessageComponent from "./MessageComponent";
-import logoutIcon from "../assets/logout.png";
 import noMessagesImg from "../assets/no_messages.png";
 import SendMessage from "./SendMessage";
-import {
-  MagnifyingGlassIcon,
-  PencilSquareIcon,
-} from "@heroicons/react/24/outline";
-import { authenticate, saveAuthUser } from "../slices/authSlice";
-import { useDispatch } from "react-redux";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+
+import Profile from "./Profile";
 
 interface ChatsResponse {
   success: true;
@@ -30,7 +26,6 @@ interface ChatsResponse {
 }
 
 const Dashboard = () => {
-  const dispatch = useDispatch();
   const { authUser } = useSelector((state: RootState) => state.authState);
   const { messages, loading } = useSelector(
     (state: RootState) => state.chatState
@@ -67,27 +62,6 @@ const Dashboard = () => {
       .split(",")[1];
 
     return formattedDate;
-  };
-
-  interface LogoutResponse {
-    success: boolean;
-    message: string;
-  }
-
-  const logout = () => {
-    chatApi
-      .post<LogoutResponse>("/api/auth/logout")
-      .then((res) => {
-        if (res.data.success) {
-          //set the authUser to null and authenticated to false
-          dispatch(saveAuthUser(null));
-          dispatch(authenticate(false));
-          chatApi.defaults.headers.common["Authorization"] = "";
-        }
-      })
-      .catch((err) => {
-        navigate(`/error/${err.response.status}/${err.response.data.message}`);
-      });
   };
 
   const ShowChats = (): JSX.Element => {
@@ -132,27 +106,8 @@ const Dashboard = () => {
 
   return (
     <section className="dashboard h-screen grid grid-cols-10 grid-rows-10">
-      <div className="top-panel col-span-10 row-span-1 col-start-1 grid grid-cols-10     bg-ms-darker border-b border-ms-dark items-center">
-        <div className="user-profile col-span-2  p-4   flex items-center font-light text-ms-almost-white border-e border-ms-dark ">
-          <div className="profile-picture   max-w-[60px] ">
-            <img
-              src={import.meta.env.VITE_BASE_URL + authUser?.profile_picture}
-              alt=""
-            />
-          </div>
-
-          <div className="username text-lg font-normal  ms-3">
-            {authUser?.username}
-          </div>
-          <PencilSquareIcon className="size-6 ms-3 cursor-pointer " />
-          <img
-            onClick={logout}
-            className="size-8 logout cursor-pointer ms-auto p-1.5 bg-ms-secondary rounded-[0.4rem]"
-            src={logoutIcon}
-            alt=""
-          />
-        </div>
-
+      <div className="top-panel col-span-10 row-span-1 col-start-1 grid grid-cols-10  bg-ms-darker border-b border-ms-dark items-center">
+        <Profile authUser={authUser} />
         <NavLink
           to={"/"}
           id="logo"
@@ -167,8 +122,8 @@ const Dashboard = () => {
             className="p-1 flex-grow focus:outline-none"
             placeholder="Search..."
             type="text"
-            name=""
-            id=""
+            name="search-users"
+            id="search-users"
           />
         </div>
 
@@ -182,8 +137,8 @@ const Dashboard = () => {
               className="p-1 flex-grow focus:outline-none"
               placeholder="Search..."
               type="text"
-              name=""
-              id=""
+              name="search-chats"
+              id="search-chats"
             />
           </div>
         </div>

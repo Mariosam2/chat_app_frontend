@@ -2,7 +2,6 @@ import { Route, Routes } from "react-router";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import Profile from "./components/Profile";
 import Error from "./components/Error";
 import Dashboard from "./components/Dashboard";
 import { useLocation } from "react-router";
@@ -99,15 +98,6 @@ function App() {
               </RequireAuth>
             }
           />
-          <Route
-            path="/profile"
-            element={
-              <RequireAuth>
-                <Profile />
-              </RequireAuth>
-            }
-          />
-
           <Route path="/error/:statuscode/:message" element={<Error />} />
         </Routes>
       </div>
