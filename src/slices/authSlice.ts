@@ -24,8 +24,11 @@ export const authSlice = createSlice({
     finishedAuthLoading: (state: authState) => {
       state.loading = false;
     },
-    saveAuthUser: (state: authState, action: PayloadAction<AuthUser>) => {
-      state.authUser = { ...action.payload };
+    saveAuthUser: (
+      state: authState,
+      action: PayloadAction<AuthUser | null>
+    ) => {
+      state.authUser = action.payload !== null ? { ...action.payload } : null;
     },
     authenticate: (state: authState, action: PayloadAction<boolean>) => {
       //console.log("authenticate");

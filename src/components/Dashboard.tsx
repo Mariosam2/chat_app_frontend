@@ -15,7 +15,14 @@ import { type ChatType } from "../types";
 import logo from "../assets/logo.png";
 import MessageComponent from "./MessageComponent";
 import logoutIcon from "../assets/logout.png";
+import noMessagesImg from "../assets/no_messages.png";
 import SendMessage from "./SendMessage";
+import {
+  MagnifyingGlassIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/24/outline";
+import { authenticate, saveAuthUser } from "../slices/authSlice";
+import { useDispatch } from "react-redux";
 
 interface ChatsResponse {
   success: true;
@@ -23,6 +30,7 @@ interface ChatsResponse {
 }
 
 const Dashboard = () => {
+  const dispatch = useDispatch();
   const { authUser } = useSelector((state: RootState) => state.authState);
   const { messages, loading } = useSelector(
     (state: RootState) => state.chatState
@@ -30,6 +38,13 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [chats, setChats]: [ChatType[], Dispatch<SetStateAction<ChatType[]>>] =
     useState<ChatType[]>([]);
+
+  useEffect(() => {
+    if (authUser !== null) {
+      getChats();
+    }
+  }, [authUser]);
+
   const getChats = () => {
     chatApi
       .get<ChatsResponse>(`/api/chats/${authUser?.uuid}`)
@@ -54,9 +69,30 @@ const Dashboard = () => {
     return formattedDate;
   };
 
+  interface LogoutResponse {
+    success: boolean;
+    message: string;
+  }
+
+  const logout = () => {
+    chatApi
+      .post<LogoutResponse>("/api/auth/logout")
+      .then((res) => {
+        if (res.data.success) {
+          //set the authUser to null and authenticated to false
+          dispatch(saveAuthUser(null));
+          dispatch(authenticate(false));
+          chatApi.defaults.headers.common["Authorization"] = "";
+        }
+      })
+      .catch((err) => {
+        navigate(`/error/${err.response.status}/${err.response.data.message}`);
+      });
+  };
+
   const ShowChats = (): JSX.Element => {
     return chats.length > 0 ? (
-      <>
+      <div className=" grid grid-rows-7">
         {chats.map((chat, index) => {
           const messageCreatedAt = getHoursMinutesFormatted(
             chat.lastMessage?.created_at
@@ -65,7 +101,7 @@ const Dashboard = () => {
             <Chat key={index} chat={chat} messageCreatedAt={messageCreatedAt} />
           );
         })}
-      </>
+      </div>
     ) : (
       <div>No chats yet</div>
     );
@@ -73,7 +109,7 @@ const Dashboard = () => {
 
   const ShowMessages = (): JSX.Element => {
     return !loading && messages.length > 0 ? (
-      <div className="messages-container flex flex-col p-24  h-[80vh] ">
+      <div className="messages-container flex flex-col p-24  h-[calc(90vh-60px)] border-b border-ms-dark ">
         {messages.map((message, index) => {
           const messageCreatedAt = getHoursMinutesFormatted(message.created_at);
           return (
@@ -86,50 +122,83 @@ const Dashboard = () => {
         })}
       </div>
     ) : loading ? (
-      <div className=" h-[80vh]">Loading...</div>
+      <div className="h-[calc(90vh-60px)]">Loading...</div>
     ) : (
-      <div className=" h-[80vh] text-ms-almost-white">No messages here...</div>
+      <div className="h-[calc(90vh-60px)] grid place-items-center text-ms-almost-white">
+        <img className="no-messages" src={noMessagesImg} alt="" />
+      </div>
     );
   };
 
-  useEffect(() => {
-    if (authUser !== null) {
-      getChats();
-    }
-  }, [authUser]);
   return (
-    <section className="dashboard h-screen grid grid-cols-10 grid-row-6">
-      <div className="top-panel col-span-10 row-span-1 bg-ms-dark flex items-center p-4">
-        <NavLink to={"/"} id="logo" className="max-w-[120px]">
-          <img src={logo} alt="" />
-        </NavLink>
-        {/* TODO: user edit panel */}
-      </div>
-      <div className="chats-panel  col-span-2 row-span-5 row-start-2 bg-ms-dark grid grid-rows-6">
-        <ShowChats />
-      </div>
-      <div className="chat-panel flex flex-col col-span-7 row-span-5 row-start-2  bg-ms-darker">
-        <ShowMessages />
-        <SendMessage />
-      </div>
-      <div className="side-panel p-6 flex flex-col col-span-1 row-span-5 row-start-2 bg-ms-dark border-t border-ms-darker">
-        <div className="user-profile  flex flex-col items-center bg-ms-dark p-4 rounded-4xl font-light text-ms-almost-white">
-          <div className="profile-picture max-w-[60px] ">
+    <section className="dashboard h-screen grid grid-cols-10 grid-rows-10">
+      <div className="top-panel col-span-10 row-span-1 col-start-1 grid grid-cols-10     bg-ms-darker border-b border-ms-dark items-center">
+        <div className="user-profile col-span-2  p-4   flex items-center font-light text-ms-almost-white border-e border-ms-dark ">
+          <div className="profile-picture   max-w-[60px] ">
             <img
               src={import.meta.env.VITE_BASE_URL + authUser?.profile_picture}
               alt=""
             />
           </div>
 
-          <div className="username mt-2">{authUser?.username}</div>
-          <div className="edit  bg-ms-secondary font-normal cursor-pointer text-ms-almost-white px-4 py-1 rounded-2xl mt-6">
-            Edit profile
+          <div className="username text-lg font-normal  ms-3">
+            {authUser?.username}
+          </div>
+          <PencilSquareIcon className="size-6 ms-3 cursor-pointer " />
+          <img
+            onClick={logout}
+            className="size-8 logout cursor-pointer ms-auto p-1.5 bg-ms-secondary rounded-[0.4rem]"
+            src={logoutIcon}
+            alt=""
+          />
+        </div>
+
+        <NavLink
+          to={"/"}
+          id="logo"
+          className="max-w-[120px] col-span-1 ms-4 p-2"
+        >
+          <img src={logo} alt="" />
+        </NavLink>
+
+        <div className="searchbar-users h-[40px] col-span-5 col-start-4 bg-ms-dark rounded-xl p-2 text-ms-muted flex items-center ">
+          <MagnifyingGlassIcon className="size-5 me-1 " />
+          <input
+            className="p-1 flex-grow focus:outline-none"
+            placeholder="Search..."
+            type="text"
+            name=""
+            id=""
+          />
+        </div>
+
+        {/* TODO: user edit panel */}
+      </div>
+      <div className="chats-panel  col-span-2 row-span-9  row-start-2 bg-ms-darker border-e border-ms-dark">
+        <div className="searchbar-chats-container  p-3 border-b border-ms-dark">
+          <div className="searchbar-chats h-[40px] bg-ms-dark rounded-xl p-2 text-ms-muted flex items-center ">
+            <MagnifyingGlassIcon className="size-5 me-1 " />
+            <input
+              className="p-1 flex-grow focus:outline-none"
+              placeholder="Search..."
+              type="text"
+              name=""
+              id=""
+            />
           </div>
         </div>
+
+        <ShowChats />
+      </div>
+      <div className="chat-panel flex flex-col col-span-8 row-span-9 row-start-2  bg-ms-darker">
+        <ShowMessages />
+        <SendMessage />
+      </div>
+      {/* <div className="side-panel p-6 flex flex-col col-span-1 row-span-5 row-start-1 bg-ms-dark border-t border-ms-darker">
         <div className="logout w-fit rounded-2xl grid place-items-center mt-auto mx-auto p-4 ps-3 cursor-pointer  bg-ms-secondary">
           <img className="size-8" src={logoutIcon} alt="" />
         </div>
-      </div>
+      </div> */}
     </section>
   );
 };

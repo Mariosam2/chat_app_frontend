@@ -3,7 +3,7 @@
 }
 
 .messages-container {
-  background-image: url("../assets/bg-chat.svg");
+  background-image: url("../assets/chat_bg.png");
   background-size: 20%;
   background-repeat: repeat;
 }
@@ -18,4 +18,8 @@
 .logout:hover {
   box-shadow: 0 0 30px 10px var(--color-ms-secondary);
   transition: all 0.25 ease-out;
+}
+
+img.no-messages {
+  max-width: 300px;
 }

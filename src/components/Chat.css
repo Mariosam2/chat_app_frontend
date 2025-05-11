@@ -1,24 +1,31 @@
-.chat {
-  border: 0 solid transparent;
-
-  transition: all 0.25s ease-out;
+.chat .username {
+  color: var(--color-ms-almost-white);
 }
 
 .chat:hover {
-  background-color: var(--color-ms-dark);
-  border: 0 solid var(--color-ms-darker);
+  background: rgba(55, 121, 247, 0.25);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.25s ease-out;
+}
 
+.chat:hover .username {
+  filter: saturate(400%);
+  color: var(--color-ms-secondary);
   transition: all 0.25s ease-out;
 }
 .chat.active {
-  border: 0 solid var(--color-ms-darker);
-
-  background-color: var(--color-ms-dark);
+  background: rgba(55, 121, 247, 0.25);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
-.chat,
+.chat.active .username {
+  filter: saturate(400%);
+  color: var(--color-ms-secondary);
+}
+
+/* .chat,
 .chat:hover,
 .chat.active {
-  border-top-width: 1px;
-  border-bottom-width: 1px;
-}
+  border-top-width: 2px;
+  border-bottom-width: 2px;
+} */

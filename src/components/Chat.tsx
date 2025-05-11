@@ -55,7 +55,7 @@ const Chat = ({
   return (
     <div
       onClick={() => getMessages(authUser!.uuid, chat.uuid)}
-      className={`chat bg-ms-darker row-span-1 flex items-center px-4 cursor-pointer border-e border-ms-dark ${
+      className={`chat bg-ms-darker row-span-1 flex items-center px-4 cursor-pointer ${
         activeChat === chat.uuid ? "active" : ""
       }`}
     >
@@ -68,8 +68,8 @@ const Chat = ({
           />
         </div>
       </div>
-      <div className="content px-2 grow">
-        <h5 className="text-xl text-ms-almost-white">
+      <div className="content p-2 grow">
+        <h5 className="text-normal font-light  username ">
           {chat.receiver?.username}
         </h5>
         <span className="text-ms-muted block font-light text-sm pt-2 ">
