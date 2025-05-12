@@ -5,6 +5,15 @@ export type Message = {
   status: string;
 };
 
+export type MessageSearchResult = {
+  content: string;
+  user: {
+    uuid: string;
+    username: string;
+    profile_picture: string;
+  } | null;
+};
+
 export type User = {
   uuid: string;
   username: string;

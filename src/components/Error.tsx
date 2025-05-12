@@ -22,7 +22,7 @@ const Error = () => {
             className="font-semibold w-full  inline-block text-ms-dark bg-ms-almost-white rounded-xl px-3 py-2 mt-6"
             to={"/dashboard"}
           >
-            Back to Dashboard
+            Go back
           </NavLink>
         </div>
       </div>

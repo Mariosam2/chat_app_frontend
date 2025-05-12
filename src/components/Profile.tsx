@@ -44,8 +44,9 @@ const Profile = ({ authUser }: ProfileProps) => {
 
   return (
     <div className="user-profile col-span-2  p-4   flex items-center font-light text-ms-almost-white border-e border-ms-dark ">
-      <div className="profile-picture   max-w-[60px] ">
+      <div className="profile-picture">
         <img
+          className=" w-[60px] aspect-square  rounded-full"
           src={import.meta.env.VITE_BASE_URL + authUser?.profile_picture}
           alt=""
         />

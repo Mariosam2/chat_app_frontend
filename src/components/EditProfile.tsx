@@ -1,9 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import React, { useEffect, useState } from "react";
 import { chatApi, type AuthUser } from "../helpers/axiosInterceptor";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { useSelector } from "react-redux";
@@ -13,9 +8,13 @@ import {
   isEditing,
   setConfirmPasswordHidden,
   setPasswordHidden,
+  userEdited,
 } from "../slices/profileSlice";
 import "./EditProfile.css";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import userEditedLottie from "../assets/user_edited.lottie";
+import { saveAuthUser } from "../slices/authSlice";
 
 interface EditProfileProps {
   authUser: AuthUser | null;
@@ -23,13 +22,16 @@ interface EditProfileProps {
 
 const EditProfile = ({ authUser }: EditProfileProps) => {
   const dispatch = useDispatch();
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(authUser!.username);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { passwordHidden, confirmPasswordHidden, editing } = useSelector(
-    (state: RootState) => state.profileState
-  );
+  const [validationError, setValidationError] = useState({
+    field: null,
+    message: null,
+  });
+  const { passwordHidden, confirmPasswordHidden, editing, userHasBeenEdited } =
+    useSelector((state: RootState) => state.profileState);
   const [passwordOrTextType, setPasswordOrTextType] = useState("text");
   const [confirmPasswordOrTextType, setConfrimPasswordOrTextType] =
     useState("text");
@@ -69,24 +71,36 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
 
   const closePanel = () => {
     dispatch(isEditing(false));
+    setTimeout(() => {
+      dispatch(userEdited(false));
+    }, 250);
   };
 
   interface UpdateResponse {
     success: boolean;
     message: string;
+    user: AuthUser;
   }
 
   const updateUser = (e: React.FormEvent) => {
     e.preventDefault();
+    setValidationError({ field: null, message: null });
 
     const formData = new FormData();
 
     if (selectedImage) {
       formData.append("profile_picture", selectedImage);
-      formData.append("path", selectedImage ? selectedImage.name : "");
     }
 
-    formData.append("username", username);
+    if (authUser) {
+      formData.append(
+        "username",
+        username === authUser.username ? "" : username
+      );
+    }
+    console.log(selectedImage);
+    formData.append("path", selectedImage ? selectedImage.name : "");
+
     formData.append("password", password);
     formData.append("confirm_password", confirmPassword);
 
@@ -99,35 +113,56 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
 
       .then((res) => {
         if (res.data.success) {
+          console.log("edited");
           //show something to the user as a feedback
+          dispatch(saveAuthUser(res.data.user));
+          dispatch(userEdited(true));
         }
       })
       .catch((err) => {
         //check for validation errors
         //otherwise redirect to error component
+        if (err.response?.data?.invalidField) {
+          setValidationError({
+            field: err.response.data?.invalidField,
+            message: err.response.data?.message,
+          });
+        } else {
+          //redirect to error component
+        }
       });
   };
 
-  const ShowEye = ({ identifier }: { identifier: string }) => {
-    if (!passwordHidden && !confirmPasswordHidden) {
+  const ShowPasswordEye = () => {
+    if (!passwordHidden) {
       return (
         <EyeIcon
-          onClick={
-            identifier === "password"
-              ? togglePasswordEye
-              : toggleConfirmPasswordEye
-          }
+          onClick={togglePasswordEye}
           className="size-5 cursor-pointer text-ms-dark absolute right-0 me-2 bottom-[17.5px] translate-y-[50%]"
         />
       );
     } else {
       return (
         <EyeSlashIcon
-          onClick={
-            identifier === "password"
-              ? togglePasswordEye
-              : toggleConfirmPasswordEye
-          }
+          onClick={togglePasswordEye}
+          className="size-5 cursor-pointer text-ms-dark absolute right-0 me-2 bottom-[17.5px] translate-y-[50%]"
+        />
+      );
+    }
+  };
+
+  const ShowConfirmPasswordEye = () => {
+    if (!confirmPasswordHidden) {
+      return (
+        <EyeIcon
+          onClick={toggleConfirmPasswordEye}
+          className="size-5 cursor-pointer text-ms-dark absolute right-0 me-2 bottom-[17.5px] translate-y-[50%]"
+        />
+      );
+    } else {
+      return (
+        <EyeSlashIcon
+          onClick={toggleConfirmPasswordEye}
           className="size-5 cursor-pointer text-ms-dark absolute right-0 me-2 bottom-[17.5px] translate-y-[50%]"
         />
       );
@@ -145,7 +180,11 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
           onClick={closePanel}
           className="size-6 cursor-pointer absolute top-[12px] right-[12px]"
         />
-        <form action="/" encType="multipart/form-data">
+        <form
+          className={`${userHasBeenEdited ? "hidden" : "block"}`}
+          action="/"
+          encType="multipart/form-data"
+        >
           <div className="profile-picture">
             <img
               className="w-[250px] aspect-square object-cover  rounded-full mx-auto"
@@ -169,6 +208,11 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
                   }
                 }}
               />
+              <span className="text-red-500 block text-sm h-[20px] my-2 text-center capitalize">
+                {validationError.field === "profile_picture"
+                  ? validationError.message
+                  : ""}
+              </span>
               <div className="change-picture bg-ms-secondary relative z-1 px-4 py-2 rounded-2xl">
                 Change picture
               </div>
@@ -180,13 +224,23 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
               Username
             </label>
             <input
-              className="bg-ms-almost-white  h-[35px] focus:outline-none rounded-xl text-ms-dark  p-1.5"
+              className={`bg-ms-almost-white  h-[35px] focus:outline-none rounded-xl text-ms-dark  p-1.5 ${
+                validationError.field === "username" ||
+                validationError.field === "all"
+                  ? "border border-red-500"
+                  : ""
+              }`}
               onChange={handleUsernameChange}
               type="text"
               name="username"
               id="username"
-              value={username !== "" ? username : authUser?.username}
+              value={username}
             />
+            <span className="text-red-500 text-sm h-[20px]">
+              {validationError.field === "username"
+                ? validationError.message
+                : ""}
+            </span>
           </div>
           <div className="grid grid-cols-2 gap-x-2">
             <div className="password-input  relative mb-3">
@@ -198,24 +252,35 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
                 value={password}
                 className={`w-full mt-2 h-[35px] ${
                   passwordOrTextType === "password" ? "font-extrabold" : ""
+                } ${
+                  validationError.field === "password" ||
+                  validationError.field === "all"
+                    ? "border border-red-500"
+                    : ""
                 } bg-ms-almost-white p-1.5 focus:outline-none rounded-xl text-ms-dark`}
                 type={passwordOrTextType}
                 name="password"
                 id="password"
               />
 
-              <ShowEye identifier={"password"} />
+              <ShowPasswordEye />
             </div>
+
             <div className="confirm-password  relative mb-3">
               <label htmlFor="confirm-password" className=" font-light text-sm">
                 Confirm Password
               </label>
               <input
                 onChange={handleConfirmPasswordChange}
-                value={password}
+                value={confirmPassword}
                 className={`w-full mt-2  h-[35px] ${
                   confirmPasswordOrTextType === "password"
                     ? "font-extrabold"
+                    : ""
+                } ${
+                  validationError.field === "password" ||
+                  validationError.field === "all"
+                    ? "border border-red-500"
                     : ""
                 } bg-ms-almost-white p-1.5 focus:outline-none rounded-xl text-ms-dark`}
                 type={confirmPasswordOrTextType}
@@ -223,16 +288,32 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
                 id="confirm-password"
               />
 
-              <ShowEye identifier={"confirm-password"} />
+              <ShowConfirmPasswordEye />
             </div>
+            <span className="text-red-500  col-span-2  text-sm min-h-[20px]">
+              {validationError.field === "password" ||
+              validationError.field === "all"
+                ? validationError.message
+                : ""}
+            </span>
           </div>
           <div
             onClick={updateUser}
-            className="save bg-ms-secondary px-4 py-2 rounded-2xl mt-6 w-fit"
+            className="save bg-ms-secondary px-4 py-2 rounded-2xl cursor-pointer mt-6 w-fit"
           >
             Save
           </div>
         </form>
+        <div
+          className={`user-edited w-sm  z-2 ${
+            userHasBeenEdited ? "block" : "hidden"
+          }`}
+        >
+          <DotLottieReact src={userEditedLottie} autoplay speed={0.75} />
+          <div className="text-ms-almost-white text-lg font-semibold text-center my-3">
+            User edited successfully
+          </div>
+        </div>
       </div>
       <div
         className={`layover fixed w-full h-full left-0 bottom-0 z-1 bg-ms-layover ${

@@ -22,6 +22,7 @@ const Login = () => {
   const { authenticated } = useSelector((state: RootState) => state.authState);
   const [passwordOrTextType, setPasswordOrTextType] = useState("text");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [email, setEmail] = useState("");
   const [passwordHidden, setPasswordHidden] = useState(false);
@@ -31,6 +32,11 @@ const Login = () => {
       navigate("/dashboard");
     }
   }, []);
+
+  useEffect(() => {
+    setEmailError("");
+    setError("");
+  }, [password, email]);
 
   useEffect(() => {
     setPasswordOrTextType(passwordHidden ? "password" : "text");
@@ -131,7 +137,7 @@ const Login = () => {
                 name="email"
                 id="email"
               />
-              <span className="text-red-500 text-sm h-[20px] p-0.5">
+              <span className="text-red-500 text-sm h-[20px] p-0.5 capitalize">
                 {emailError.length > 0 ? emailError : ""}
               </span>
             </div>
@@ -154,8 +160,8 @@ const Login = () => {
 
                 <ShowEye />
               </div>
-              <span className="text-red-500 text-sm h-[20px] p-0.5">
-                password errors to implement
+              <span className="text-red-500 text-sm h-[20px] p-0.5 capitalize">
+                {error.length > 0 ? error : ""}
               </span>
             </div>
 

@@ -16,9 +16,9 @@ import logo from "../assets/logo.png";
 import MessageComponent from "./MessageComponent";
 import noMessagesImg from "../assets/no_messages.png";
 import SendMessage from "./SendMessage";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 import Profile from "./Profile";
+import Searchbar from "./Searchbar";
 
 interface ChatsResponse {
   success: true;
@@ -115,45 +115,16 @@ const Dashboard = () => {
         >
           <img src={logo} alt="" />
         </NavLink>
-
-        <div className="searchbar-users h-[40px] col-span-5 col-start-4 bg-ms-dark rounded-xl p-2 text-ms-muted flex items-center ">
-          <MagnifyingGlassIcon className="size-5 me-1 " />
-          <input
-            className="p-1 flex-grow focus:outline-none"
-            placeholder="Search..."
-            type="text"
-            name="search-users"
-            id="search-users"
-          />
-        </div>
-
-        {/* TODO: user edit panel */}
+        <Searchbar authUser={authUser ? authUser : null} />
       </div>
-      <div className="chats-panel  col-span-2 row-span-9  row-start-2 bg-ms-darker border-e border-ms-dark">
-        <div className="searchbar-chats-container  p-3 border-b border-ms-dark">
-          <div className="searchbar-chats h-[40px] bg-ms-dark rounded-xl p-2 text-ms-muted flex items-center ">
-            <MagnifyingGlassIcon className="size-5 me-1 " />
-            <input
-              className="p-1 flex-grow focus:outline-none"
-              placeholder="Search..."
-              type="text"
-              name="search-chats"
-              id="search-chats"
-            />
-          </div>
-        </div>
-
+      <div className="chats-panel relative  col-span-2 row-span-9  row-start-2 bg-ms-darker border-e border-ms-dark">
+        <div className="sticky w-full top-0 h-[20px] bg-ms-dark"></div>
         <ShowChats />
       </div>
       <div className="chat-panel flex flex-col col-span-8 row-span-9 row-start-2  bg-ms-darker">
         <ShowMessages />
         <SendMessage />
       </div>
-      {/* <div className="side-panel p-6 flex flex-col col-span-1 row-span-5 row-start-1 bg-ms-dark border-t border-ms-darker">
-        <div className="logout w-fit rounded-2xl grid place-items-center mt-auto mx-auto p-4 ps-3 cursor-pointer  bg-ms-secondary">
-          <img className="size-8" src={logoutIcon} alt="" />
-        </div>
-      </div> */}
     </section>
   );
 };

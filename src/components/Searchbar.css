@@ -1,0 +1,13 @@
+.result:hover {
+  background: rgba(55, 121, 247, 0.25);
+  box-shadow: var(--color-ms-darker) 0px 6px 12px -2px;
+  transition: all 0.25s ease-out;
+  cursor: pointer;
+}
+
+.result:hover .username,
+.result:hover .content {
+  filter: saturate(400%);
+  color: var(--color-ms-secondary);
+  transition: all 0.25s ease-out;
+}
