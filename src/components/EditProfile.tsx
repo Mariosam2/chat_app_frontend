@@ -22,7 +22,7 @@ interface EditProfileProps {
 
 const EditProfile = ({ authUser }: EditProfileProps) => {
   const dispatch = useDispatch();
-  const [username, setUsername] = useState(authUser!.username);
+  const [username, setUsername] = useState(authUser?.username);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -92,7 +92,7 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
       formData.append("profile_picture", selectedImage);
     }
 
-    if (authUser) {
+    if (authUser && username) {
       formData.append(
         "username",
         username === authUser.username ? "" : username

@@ -13,12 +13,13 @@ import "./Dashboard.css";
 import Chat from "./Chat";
 import { type ChatType } from "../types";
 import logo from "../assets/logo.png";
-import MessageComponent from "./MessageComponent";
-import noMessagesImg from "../assets/no_messages.png";
 import SendMessage from "./SendMessage";
-
+import type { MessageSearchResult, User } from "../types";
 import Profile from "./Profile";
 import Searchbar from "./Searchbar";
+import { useDispatch } from "react-redux";
+import { setActiveChat } from "../slices/chatSlice";
+import Messages from "./Messages";
 
 interface ChatsResponse {
   success: true;
@@ -27,8 +28,11 @@ interface ChatsResponse {
 
 const Dashboard = () => {
   const { authUser } = useSelector((state: RootState) => state.authState);
-  const { messages, loading } = useSelector(
-    (state: RootState) => state.chatState
+
+  const dispatch = useDispatch();
+
+  const { clickedResult } = useSelector(
+    (state: RootState) => state.searchState
   );
   const navigate = useNavigate();
   const [chats, setChats]: [ChatType[], Dispatch<SetStateAction<ChatType[]>>] =
@@ -39,6 +43,62 @@ const Dashboard = () => {
       getChats();
     }
   }, [authUser]);
+
+  useEffect(() => {
+    //console.log(clickedResult);
+    if (isUser(clickedResult)) {
+      //create a new chat with the user
+    } else if (isMessageSearchResult(clickedResult)) {
+      //look for the chat in the chats panel, set it active, look for the message and scroll it into view
+      const userChatsUUIDS = chats.map((chat) => chat.uuid);
+      if (userChatsUUIDS.includes(clickedResult.chat.uuid)) {
+        const findChat = userChatsUUIDS.find(
+          (uuid) => uuid === clickedResult.chat.uuid
+        );
+        if (findChat && findChat?.trim() !== "") {
+          //console.log(findChat);
+          dispatch(setActiveChat(findChat));
+        }
+      }
+    }
+  }, [clickedResult]);
+
+  const isUser = (obj: unknown): obj is User => {
+    if (obj) {
+      return (
+        typeof (obj as User).username === "string" &&
+        typeof (obj as User).profile_picture === "string" &&
+        typeof (obj as User).uuid === "string"
+      );
+    }
+    return false;
+  };
+
+  const isMessageSearchResult = (obj: unknown): obj is MessageSearchResult => {
+    let contentValid: boolean = false;
+    let chatValid: boolean = false;
+    let userValid: boolean = false;
+    if (obj) {
+      if (typeof (obj as MessageSearchResult).content === "string") {
+        contentValid = true;
+      }
+
+      if (
+        (obj as MessageSearchResult).chat &&
+        typeof (obj as MessageSearchResult).chat.uuid === "string"
+      ) {
+        chatValid = true;
+      }
+
+      if (isUser((obj as MessageSearchResult).user)) {
+        userValid = true;
+      }
+
+      return contentValid && chatValid && userValid;
+    }
+
+    return false;
+  };
 
   const getChats = () => {
     chatApi
@@ -51,7 +111,6 @@ const Dashboard = () => {
         navigate(`/error/${err.response.status}/${err.response.data.message}`);
       });
   };
-
   const getHoursMinutesFormatted = (stringDate: string) => {
     const options: Intl.DateTimeFormatOptions = {
       hour: "2-digit",
@@ -63,7 +122,6 @@ const Dashboard = () => {
 
     return formattedDate;
   };
-
   const ShowChats = (): JSX.Element => {
     return chats.length > 0 ? (
       <div className=" grid grid-rows-7">
@@ -78,29 +136,6 @@ const Dashboard = () => {
       </div>
     ) : (
       <div>No chats yet</div>
-    );
-  };
-
-  const ShowMessages = (): JSX.Element => {
-    return !loading && messages.length > 0 ? (
-      <div className="messages-container flex flex-col p-24  h-[calc(90vh-60px)] border-b border-ms-dark ">
-        {messages.map((message, index) => {
-          const messageCreatedAt = getHoursMinutesFormatted(message.created_at);
-          return (
-            <MessageComponent
-              key={index}
-              message={message}
-              createdAt={messageCreatedAt}
-            />
-          );
-        })}
-      </div>
-    ) : loading ? (
-      <div className="h-[calc(90vh-60px)]">Loading...</div>
-    ) : (
-      <div className="h-[calc(90vh-60px)] grid place-items-center text-ms-almost-white">
-        <img className="no-messages" src={noMessagesImg} alt="" />
-      </div>
     );
   };
 
@@ -122,7 +157,7 @@ const Dashboard = () => {
         <ShowChats />
       </div>
       <div className="chat-panel flex flex-col col-span-8 row-span-9 row-start-2  bg-ms-darker">
-        <ShowMessages />
+        <Messages />
         <SendMessage />
       </div>
     </section>

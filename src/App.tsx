@@ -37,6 +37,9 @@ function App() {
 
   //when components mount make the call to check authentication
   useEffect(() => {
+    /* document.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+    }); */
     //console.log("app level", routePathname);
     if (routePathname !== "/") {
       getAuthUser();

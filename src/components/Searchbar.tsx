@@ -5,7 +5,10 @@ import lodash from "lodash";
 import type { MessageSearchResult, User } from "../types";
 import noResultsImg from "../assets/no-results.png";
 import "./Searchbar.css";
-import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { clickResult, isSearching, setQuery } from "../slices/searchSlice";
+import { useSelector } from "react-redux";
+import type { RootState } from "..";
 
 interface SearchResponse {
   success: boolean;
@@ -20,8 +23,10 @@ interface SearchbarProps {
 }
 
 const Searchbar = ({ authUser }: SearchbarProps) => {
-  const [query, setQuery] = useState("");
-
+  const dispatch = useDispatch();
+  const { query, clickedResult } = useSelector(
+    (state: RootState) => state.searchState
+  );
   const [searchResults, setSearchResults] = useState<{
     users: User[];
     messages: MessageSearchResult[];
@@ -46,29 +51,45 @@ const Searchbar = ({ authUser }: SearchbarProps) => {
     }
   };
   useEffect(() => {
-    /* document.addEventListener("contextmenu", (e) => {
-      e.preventDefault();
-    }); */
-
     window.addEventListener("click", (e: MouseEvent) => {
       const searchbar = document.querySelector(".searchbar");
       const target = e.target as Node;
-      console.log(target);
+      //console.log(target);
       if (searchbar && !searchbar?.contains(target)) {
         setSearchResults(null);
+        dispatch(isSearching(false));
       }
     });
   }, []);
-
-  const [debouncedSearch] = useState(() => lodash.debounce(search, 250));
 
   useEffect(() => {
     debouncedSearch(query);
   }, [query]);
 
+  const [debouncedSearch] = useState(() => lodash.debounce(search, 250));
+
+  const handleClickOnResult = (result: User | MessageSearchResult) => {
+    dispatch(clickResult(result));
+    dispatch(isSearching(false));
+  };
+
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (clickedResult !== null) {
+      dispatch(clickResult(null));
+    }
+    dispatch(isSearching(true));
     const changedQuery = e.target.value;
-    setQuery(changedQuery);
+    dispatch(setQuery(changedQuery));
+  };
+
+  const highlightMatch = (string: string, query: string) => {
+    const newBody = string.replace(
+      new RegExp(query, "gi"),
+      (match) =>
+        `<mark style="font-weight: 700; background-color:transparent;">${match}</mark>`
+    );
+
+    return { __html: newBody };
   };
 
   const ShowUsers = () => {
@@ -81,16 +102,21 @@ const Searchbar = ({ authUser }: SearchbarProps) => {
               return (
                 <div
                   key={index}
-                  className="result h-fit mb-auto w-1/2 p-2 flex items-center"
+                  onClick={() => handleClickOnResult(result)}
+                  className="result  h-fit mb-auto w-1/2 p-2 flex items-center"
                 >
                   <img
                     className="w-[40px] aspect-square  rounded-full"
                     src={import.meta.env.VITE_BASE_URL + result.profile_picture}
                     alt=""
                   />
-                  <div className="username ms-3 font-light">
-                    {result.username}
-                  </div>
+                  <div
+                    dangerouslySetInnerHTML={highlightMatch(
+                      result.username,
+                      query
+                    )}
+                    className="username ms-3 font-light"
+                  ></div>
                 </div>
               );
             })}
@@ -104,7 +130,7 @@ const Searchbar = ({ authUser }: SearchbarProps) => {
     if (searchResults && searchResults.messages.length > 0) {
       return (
         <div
-          className={`users-with-chat ${
+          className={`messages ${
             searchResults.users.length > 0 ? "border-s border-ms-muted" : ""
           } px-4 col-span-1`}
         >
@@ -112,7 +138,11 @@ const Searchbar = ({ authUser }: SearchbarProps) => {
           <div className="flex flex-wrap">
             {searchResults?.messages?.map((result, index) => {
               return (
-                <div key={index} className="result h-fit mb-auto w-1/2 p-2 ">
+                <div
+                  key={index}
+                  onClick={() => handleClickOnResult(result)}
+                  className="result h-fit mb-auto w-1/2 p-2 "
+                >
                   <div className="flex items-center pb-1">
                     <img
                       className="w-[40px] aspect-square  rounded-full"
@@ -126,9 +156,13 @@ const Searchbar = ({ authUser }: SearchbarProps) => {
                       {result.user?.username}
                     </div>
                   </div>
-                  <div className="content font-light pt-2">
-                    {result.content}
-                  </div>
+                  <div
+                    dangerouslySetInnerHTML={highlightMatch(
+                      result.content,
+                      query
+                    )}
+                    className="content font-light pt-2"
+                  ></div>
                 </div>
               );
             })}

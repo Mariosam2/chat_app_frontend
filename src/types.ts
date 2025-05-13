@@ -6,7 +6,11 @@ export type Message = {
 };
 
 export type MessageSearchResult = {
+  uuid: string;
   content: string;
+  chat: {
+    uuid: string;
+  };
   user: {
     uuid: string;
     username: string;

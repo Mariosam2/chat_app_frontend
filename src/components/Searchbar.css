@@ -4,6 +4,15 @@
   transition: all 0.25s ease-out;
   cursor: pointer;
 }
+.result .username mark,
+.result .content mark {
+  color: var(--color-ms-secondary);
+}
+
+.result:hover .username mark,
+.result:hover .content mark {
+  color: var(--color-ms-almost-white);
+}
 
 .result:hover .username,
 .result:hover .content {

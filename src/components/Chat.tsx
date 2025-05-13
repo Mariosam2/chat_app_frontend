@@ -13,48 +13,60 @@ import {
 import { useNavigate } from "react-router";
 
 import "./Chat.css";
+import { useEffect } from "react";
 
+interface ChatProps {
+  chat: ChatType;
+  messageCreatedAt: string;
+}
 interface MessagesResponse extends ChatState {
   success: boolean;
 }
 
-const Chat = ({
-  chat,
-  messageCreatedAt,
-}: {
-  chat: ChatType;
-  messageCreatedAt: string;
-}) => {
+const Chat = ({ chat, messageCreatedAt }: ChatProps) => {
   const navigate = useNavigate();
   const { authUser } = useSelector((state: RootState) => state.authState);
   const { activeChat } = useSelector((state: RootState) => state.chatState);
+  const { searching } = useSelector((state: RootState) => state.searchState);
   const dispatch = useDispatch();
+
   const getMessages = (userUUID: string, chatUUID: string) => {
-    dispatch(setActiveChat(chat.uuid));
-    if (activeChat !== chat.uuid) {
-      dispatch(chatLoading());
-      chatApi
-        .get<MessagesResponse>(`/api/messages/${userUUID}/${chatUUID}`)
-        .then((res) => {
-          if (res.data.success) {
-            //dispatch setMessages
-            console.log(res.data);
-            dispatch(setMessages(res.data.messages));
-            dispatch(finishedChatLoading());
-          }
-        })
-        .catch((err) => {
-          finishedChatLoading();
-          navigate(
-            `/error/${err.response.status}/${err.response.data.message}`
-          );
-        });
+    dispatch(chatLoading());
+    chatApi
+      .get<MessagesResponse>(`/api/messages/${userUUID}/${chatUUID}`)
+      .then((res) => {
+        if (res.data.success) {
+          //dispatch setMessages
+          //console.log(res.data);
+          dispatch(setMessages(res.data.messages));
+          dispatch(finishedChatLoading());
+        }
+      })
+      .catch((err) => {
+        finishedChatLoading();
+        navigate(`/error/${err.response.status}/${err.response.data.message}`);
+      });
+  };
+
+  useEffect(() => {
+    if (
+      activeChat.trim() !== "" &&
+      activeChat === chat.uuid &&
+      authUser &&
+      !searching
+    ) {
+      //console.log(activeChat);
+      getMessages(authUser.uuid, chat.uuid);
     }
+  }, [activeChat, searching]);
+
+  const setActive = () => {
+    dispatch(setActiveChat(chat.uuid));
   };
 
   return (
     <div
-      onClick={() => getMessages(authUser!.uuid, chat.uuid)}
+      onClick={setActive}
       className={`chat bg-ms-darker row-span-1 flex items-center px-4 cursor-pointer ${
         activeChat === chat.uuid ? "active" : ""
       }`}
