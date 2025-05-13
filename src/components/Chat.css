@@ -23,9 +23,13 @@
   color: var(--color-ms-secondary);
 }
 
-/* .chat,
-.chat:hover,
-.chat.active {
-  border-top-width: 2px;
-  border-bottom-width: 2px;
-} */
+.chat .delete-panel {
+  transform: scale(0);
+  opacity: 0;
+}
+
+.chat .delete-panel.show {
+  transform: scale(1);
+  opacity: 1;
+  transition: all 0.25s ease-out;
+}

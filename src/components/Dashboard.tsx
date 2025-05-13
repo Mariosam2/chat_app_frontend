@@ -20,6 +20,7 @@ import Searchbar from "./Searchbar";
 import { useDispatch } from "react-redux";
 import { setActiveChat } from "../slices/chatSlice";
 import Messages from "./Messages";
+import { getHoursMinutesFormatted } from "../helpers/helpers";
 
 interface ChatsResponse {
   success: true;
@@ -39,15 +40,48 @@ const Dashboard = () => {
     useState<ChatType[]>([]);
 
   useEffect(() => {
+    console.log(chats);
+  }, [chats]);
+
+  useEffect(() => {
     if (authUser !== null) {
       getChats();
     }
   }, [authUser]);
 
+  interface CreateChatResponse {
+    success: boolean;
+    message: string;
+    chat: ChatType;
+  }
+
   useEffect(() => {
     //console.log(clickedResult);
     if (isUser(clickedResult)) {
       //create a new chat with the user
+      // console.log(clickedResult);
+      chatApi
+        .post<CreateChatResponse>("/api/chats", {
+          senderUUID: authUser?.uuid,
+          receiverUUID: clickedResult.uuid,
+        })
+        .then((res) => {
+          if (res.data.success) {
+            const newChat = res.data.chat;
+            setChats([...chats, newChat]);
+            dispatch(setActiveChat(newChat.uuid));
+          }
+        })
+        .catch((err) => {
+          if (err.response.status === 400 && err.response.data.chat) {
+            const chatInCommon = err.response.data.chat;
+            dispatch(setActiveChat(chatInCommon));
+          } else {
+            navigate(
+              `/error/${err.response.status}/${err.response.data.message}`
+            );
+          }
+        });
     } else if (isMessageSearchResult(clickedResult)) {
       //look for the chat in the chats panel, set it active, look for the message and scroll it into view
       const userChatsUUIDS = chats.map((chat) => chat.uuid);
@@ -111,26 +145,38 @@ const Dashboard = () => {
         navigate(`/error/${err.response.status}/${err.response.data.message}`);
       });
   };
-  const getHoursMinutesFormatted = (stringDate: string) => {
-    const options: Intl.DateTimeFormatOptions = {
-      hour: "2-digit",
-      minute: "2-digit",
-    };
-    const formattedDate = new Date(stringDate)
-      .toLocaleDateString("it-IT", options)
-      .split(",")[1];
 
-    return formattedDate;
+  type MessageOrChatCreatedAt =
+    | { messageCreatedAt: string; chatCreatedAt: string }
+    | { messageCreatedAt: null; chatCreatedAt: string };
+
+  const removeChat = (chat_uuid: string) => {
+    const updatedChats = chats.filter((chat) => chat.uuid !== chat_uuid);
+
+    setChats(updatedChats);
   };
+
   const ShowChats = (): JSX.Element => {
     return chats.length > 0 ? (
-      <div className=" grid grid-rows-7">
+      <div className="flex flex-col">
         {chats.map((chat, index) => {
-          const messageCreatedAt = getHoursMinutesFormatted(
-            chat.lastMessage?.created_at
-          );
+          const createdAt: MessageOrChatCreatedAt = {
+            messageCreatedAt: chat.lastMessage
+              ? chat.lastMessage.created_at
+              : null,
+            chatCreatedAt: chat.created_at,
+          };
           return (
-            <Chat key={index} chat={chat} messageCreatedAt={messageCreatedAt} />
+            <Chat
+              removeChat={removeChat}
+              key={index}
+              chat={chat}
+              messageCreatedAt={
+                createdAt.messageCreatedAt
+                  ? getHoursMinutesFormatted(createdAt.messageCreatedAt)
+                  : getHoursMinutesFormatted(createdAt.chatCreatedAt)
+              }
+            />
           );
         })}
       </div>
@@ -152,7 +198,7 @@ const Dashboard = () => {
         </NavLink>
         <Searchbar authUser={authUser ? authUser : null} />
       </div>
-      <div className="chats-panel relative  col-span-2 row-span-9  row-start-2 bg-ms-darker border-e border-ms-dark">
+      <div className="chats-panel overflow-y-scroll relative  col-span-2 row-span-9  row-start-2 bg-ms-darker border-e border-ms-dark">
         <div className="sticky w-full top-0 h-[20px] bg-ms-dark"></div>
         <ShowChats />
       </div>

@@ -26,6 +26,7 @@ export type User = {
 
 export type ChatType = {
   uuid: string;
-  lastMessage: Message;
+  lastMessage: Message | null;
   receiver: User;
+  created_at: string;
 };

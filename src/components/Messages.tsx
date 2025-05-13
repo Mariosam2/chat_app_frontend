@@ -3,23 +3,12 @@ import noMessagesImg from "../assets/no_messages.png";
 import { useSelector } from "react-redux";
 import type { RootState } from "..";
 import { type JSX } from "react";
+import { getHoursMinutesFormatted } from "../helpers/helpers";
 
 const Messages = () => {
   const { messages, loading } = useSelector(
     (state: RootState) => state.chatState
   );
-
-  const getHoursMinutesFormatted = (stringDate: string) => {
-    const options: Intl.DateTimeFormatOptions = {
-      hour: "2-digit",
-      minute: "2-digit",
-    };
-    const formattedDate = new Date(stringDate)
-      .toLocaleDateString("it-IT", options)
-      .split(",")[1];
-
-    return formattedDate;
-  };
 
   const ShowMessages = (): JSX.Element => {
     return !loading && messages.length > 0 ? (

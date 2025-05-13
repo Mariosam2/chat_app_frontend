@@ -1,0 +1,10 @@
+.message .delete-panel {
+  transform: scale(0);
+  opacity: 0;
+}
+
+.message .delete-panel.show {
+  transform: scale(1);
+  opacity: 1;
+  transition: all 0.25s ease-out;
+}
