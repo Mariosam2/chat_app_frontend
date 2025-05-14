@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { authenticate } from "../slices/authSlice";
 import { useSelector } from "react-redux";
 import type { RootState } from "..";
+import { socket } from "../helpers/socket";
 
 interface LoginResponse {
   success: boolean;
@@ -67,6 +68,7 @@ const Login = () => {
             "Authorization"
           ] = `Bearer ${res.data.token}`;
           dispatch(authenticate(true));
+          socket.io.opts.auth = { token: res.data.token };
         }
       })
       .catch((err) => {

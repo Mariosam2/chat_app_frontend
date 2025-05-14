@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useState,
-  type Dispatch,
-  type JSX,
-  type SetStateAction,
-} from "react";
+import { useEffect, type JSX } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../index";
 import { chatApi } from "../helpers/axiosInterceptor";
@@ -18,29 +12,43 @@ import type { MessageSearchResult, User } from "../types";
 import Profile from "./Profile";
 import Searchbar from "./Searchbar";
 import { useDispatch } from "react-redux";
-import { setActiveChat } from "../slices/chatSlice";
+import { setActiveChat, setChats } from "../slices/chatSlice";
 import Messages from "./Messages";
 import { getHoursMinutesFormatted } from "../helpers/helpers";
-
-interface ChatsResponse {
-  success: true;
-  chats: ChatType[];
-}
+import { socket } from "../helpers/socket";
 
 const Dashboard = () => {
   const { authUser } = useSelector((state: RootState) => state.authState);
-
+  const { chats } = useSelector((state: RootState) => state.chatState);
   const dispatch = useDispatch();
 
   const { clickedResult } = useSelector(
     (state: RootState) => state.searchState
   );
   const navigate = useNavigate();
-  const [chats, setChats]: [ChatType[], Dispatch<SetStateAction<ChatType[]>>] =
-    useState<ChatType[]>([]);
+
+  const removeChat = (chat_uuid: string) => {
+    const updatedChats = chats.filter((chat) => chat.uuid !== chat_uuid);
+    console.log(updatedChats);
+    setChats(updatedChats);
+  };
 
   useEffect(() => {
-    console.log(chats);
+    socket.on(
+      "chat deleted",
+      ({ updatedChats }: { updatedChats: ChatType[] }) => {
+        dispatch(setChats(updatedChats));
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    if (chats.length > 0) {
+      for (let i = 0; i < chats.length; i++) {
+        const chat = chats[i];
+        socket.emit("join", { room: chat.uuid });
+      }
+    }
   }, [chats]);
 
   useEffect(() => {
@@ -68,7 +76,7 @@ const Dashboard = () => {
         .then((res) => {
           if (res.data.success) {
             const newChat = res.data.chat;
-            setChats([...chats, newChat]);
+            dispatch(setChats([...chats, newChat]));
             dispatch(setActiveChat(newChat.uuid));
           }
         })
@@ -134,12 +142,18 @@ const Dashboard = () => {
     return false;
   };
 
+  interface ChatsResponse {
+    success: true;
+    chats: ChatType[];
+  }
+
   const getChats = () => {
     chatApi
       .get<ChatsResponse>(`/api/chats/${authUser?.uuid}`)
       .then((res) => {
-        console.log(res.data.chats);
-        setChats(res.data.chats);
+        //console.log(res.data.chats);
+        //setChats(res.data.chats);
+        dispatch(setChats(res.data.chats));
       })
       .catch((err) => {
         navigate(`/error/${err.response.status}/${err.response.data.message}`);
@@ -149,12 +163,6 @@ const Dashboard = () => {
   type MessageOrChatCreatedAt =
     | { messageCreatedAt: string; chatCreatedAt: string }
     | { messageCreatedAt: null; chatCreatedAt: string };
-
-  const removeChat = (chat_uuid: string) => {
-    const updatedChats = chats.filter((chat) => chat.uuid !== chat_uuid);
-
-    setChats(updatedChats);
-  };
 
   const ShowChats = (): JSX.Element => {
     return chats.length > 0 ? (
@@ -198,11 +206,11 @@ const Dashboard = () => {
         </NavLink>
         <Searchbar authUser={authUser ? authUser : null} />
       </div>
-      <div className="chats-panel overflow-y-scroll relative  col-span-2 row-span-9  row-start-2 bg-ms-darker border-e border-ms-dark">
+      <div className="chats-panel overflow-y-auto relative  col-span-4 row-span-9  row-start-2 bg-ms-darker border-e border-ms-dark">
         <div className="sticky w-full top-0 h-[20px] bg-ms-dark"></div>
         <ShowChats />
       </div>
-      <div className="chat-panel flex flex-col col-span-8 row-span-9 row-start-2  bg-ms-darker">
+      <div className="chat-panel flex flex-col col-span-6 row-span-9 row-start-2  bg-ms-darker">
         <Messages />
         <SendMessage />
       </div>

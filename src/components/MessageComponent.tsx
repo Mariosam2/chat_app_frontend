@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Message } from "../types";
 import { useSelector } from "react-redux";
 import type { RootState } from "..";
 import { useDispatch } from "react-redux";
 import { chatApi } from "../helpers/axiosInterceptor";
 import { useNavigate } from "react-router";
-import { TrashIcon } from "@heroicons/react/24/solid";
 import { removeMessage } from "../slices/chatSlice";
 import "./MessageComponent.css";
+import { XMarkIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 interface MessageComponentProps {
   message: Message;
@@ -28,15 +28,24 @@ const MessageComponent = ({
   );
   const [isDeleting, setIsDeleting] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const messageRef = useRef<HTMLDivElement | null>(null);
+  const deletePanel = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    window.addEventListener("click", (e: MouseEvent) => {
-      const deletePanel = document.querySelector(
-        `.message[data-index="${index}"] .delete-panel`
-      );
+    window.addEventListener("contextmenu", (e: MouseEvent) => {
+      const { current }: { current: HTMLDivElement | null } = messageRef;
       const target = e.target as Node;
       //console.log(target);
-      if (deletePanel && !deletePanel.contains(target)) {
+      if (current && !current.contains(target)) {
+        setIsDeleting(false);
+      }
+    });
+
+    window.addEventListener("click", (e: MouseEvent) => {
+      const { current }: { current: HTMLDivElement | null } = deletePanel;
+      const target = e.target as Node;
+      //console.log(target);
+      if (current && !current.contains(target)) {
         setIsDeleting(false);
       }
     });
@@ -67,11 +76,16 @@ const MessageComponent = ({
     success: boolean;
     message: string;
     message_uuid: string;
+    isSender: boolean;
   }
 
-  const deleteForMe = (messageUUID: string, userUUID: string) => {
+  const deleteForMe = (message: Message, userUUID: string) => {
     chatApi
-      .delete<DeleteForMeResponse>(`/api/messages/${messageUUID}/${userUUID}`)
+      .delete<DeleteForMeResponse>(
+        `/api/messages/delete-for-user/${message.uuid}/${userUUID}?sent=${
+          message.status === "sent" ? true : false
+        }`
+      )
       .then((res) => {
         if (res.data.success) {
           //delete chat from parent chats
@@ -87,15 +101,17 @@ const MessageComponent = ({
       });
   };
 
-  interface DeleteForAllResponse {
+  /*  interface DeleteForAllResponse {
     success: boolean;
     message: string;
     message_uuid: string;
-  }
+  } */
 
-  const deleteForAll = (messageUUID: string) => {
-    chatApi
-      .delete<DeleteForAllResponse>(`/api/messages/${messageUUID}`)
+  const deleteForAll = () => {
+    /* chatApi
+      .delete<DeleteForAllResponse>(
+        `/api/messages/delete-for-all/${messageUUID}`
+      )
       .then((res) => {
         if (res.data.success) {
           const messageToRemove = res.data.message_uuid;
@@ -105,15 +121,17 @@ const MessageComponent = ({
       })
       .catch((err) => {
         navigate(`/error/${err.response.status}/${err.response.data.message}`);
-      });
+      }); */
+    //emit socket event for message deletion
   };
 
   return (
     <>
       <div
+        ref={messageRef}
         onContextMenu={() => setIsDeleting(!isDeleting)}
         data-index={index}
-        className={`message relative max-w-xs w-max my-4 rounded-4xl pb-7 p-4 pe-8  ${
+        className={`message cursor-pointer relative max-w-xs w-max my-4 rounded-4xl pb-7 p-4 pe-8  ${
           message.status === "sent"
             ? "bg-ms-almost-white text-ms-dark me-auto"
             : "  bg-ms-secondary text-ms-almost-white ms-auto"
@@ -136,21 +154,27 @@ const MessageComponent = ({
           {createdAt}
         </span>
         <div
+          ref={deletePanel}
           className={`delete-panel ${
             isDeleting ? "show" : ""
-          }  absolute right-0 z-10 top-0 bg-ms-dark p-2 rounded-2xl text-ms-almost-white`}
+          }  absolute right-0 z-10 top-0 text-sm font-light  bg-ms-dark p-3 pe-6 rounded-2xl text-ms-almost-white`}
         >
+          <XMarkIcon
+            onClick={() => setIsDeleting(false)}
+            className="size-5 p-0.5 absolute right-0.5 top-0.5 "
+          />
+
           <div
-            onClick={() => deleteForMe(message.uuid, authUser!.uuid)}
-            className="delete-for-me bg-ms-muted my-2 cursor-pointer  p-2 rounded-xl flex items-center"
+            onClick={() => deleteForMe(message, authUser ? authUser?.uuid : "")}
+            className="delete-for-me bg-ms-muted mb-3  cursor-pointer  p-2 rounded-xl flex items-center"
           >
-            Delete for me <TrashIcon className="size-6" />
+            Delete for me <TrashIcon className="size-4 ms-0.5" />
           </div>
           <div
-            onClick={() => deleteForAll(message.uuid)}
-            className="delete-for-me bg-amber-700 cursor-pointer my-2 p-2 rounded-xl  flex items-center"
+            onClick={() => deleteForAll()}
+            className="delete-for-me bg-amber-700 cursor-pointer  p-2 rounded-xl  flex items-center"
           >
-            Delete for all <TrashIcon className="size-6" />
+            Delete for all <TrashIcon className="size-4 ms-0.5" />
           </div>
         </div>
       </div>

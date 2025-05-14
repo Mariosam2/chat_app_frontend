@@ -3,6 +3,7 @@ import authReducers from "./slices/authSlice";
 import chatReducers from "./slices/chatSlice";
 import profileReducers from "./slices/profileSlice";
 import searchReducers from "./slices/searchSlice";
+import messageReducers from "./slices/messageSlice";
 
 export default configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export default configureStore({
     chatState: chatReducers,
     profileState: profileReducers,
     searchState: searchReducers,
+    messageState: messageReducers,
   },
 });

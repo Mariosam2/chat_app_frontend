@@ -7,7 +7,7 @@ import { getHoursMinutesFormatted } from "../helpers/helpers";
 
 const Messages = () => {
   const { messages, loading } = useSelector(
-    (state: RootState) => state.chatState
+    (state: RootState) => state.messageState
   );
 
   const ShowMessages = (): JSX.Element => {
