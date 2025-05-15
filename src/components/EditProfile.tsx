@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../index";
 import { useDispatch } from "react-redux";
 import {
-  isEditing,
+  editing,
   setConfirmPasswordHidden,
   setPasswordHidden,
   userEdited,
@@ -30,8 +30,12 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
     field: null,
     message: null,
   });
-  const { passwordHidden, confirmPasswordHidden, editing, userHasBeenEdited } =
-    useSelector((state: RootState) => state.profileState);
+  const {
+    passwordHidden,
+    confirmPasswordHidden,
+    isEditing,
+    userHasBeenEdited,
+  } = useSelector((state: RootState) => state.profileState);
   const [passwordOrTextType, setPasswordOrTextType] = useState("text");
   const [confirmPasswordOrTextType, setConfrimPasswordOrTextType] =
     useState("text");
@@ -70,7 +74,7 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
   };
 
   const closePanel = () => {
-    dispatch(isEditing(false));
+    dispatch(editing(false));
     setTimeout(() => {
       dispatch(userEdited(false));
     }, 250);
@@ -173,7 +177,7 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
     <>
       <div
         className={`edit-panel w-md relative bg-ms-dark text-ms-almost-white p-8 rounded-xl z-2 ${
-          editing ? "show" : ""
+          isEditing ? "show" : ""
         }`}
       >
         <XMarkIcon
@@ -317,7 +321,7 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
       </div>
       <div
         className={`layover fixed w-full h-full left-0 bottom-0 z-1 bg-ms-layover ${
-          editing ? "block" : "hidden"
+          isEditing ? "block" : "hidden"
         }`}
       ></div>
     </>

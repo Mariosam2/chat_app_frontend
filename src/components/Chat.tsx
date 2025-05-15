@@ -5,7 +5,6 @@ import type { AppDispatch, RootState } from "../index";
 import { useDispatch } from "react-redux";
 import { setActiveChat } from "../slices/chatSlice";
 import { useNavigate } from "react-router";
-
 import "./Chat.css";
 import { useEffect, useRef, useState } from "react";
 import { TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -57,15 +56,15 @@ const Chat = ({ removeChat, chat, messageCreatedAt }: ChatProps) => {
     //console.log(error);
     if (error && isAxiosError(error)) {
       navigate(`/error/${error.response.status}/${error.response.statusText}`);
-      dispatch(setActiveChat(""));
+      dispatch(setActiveChat(null));
       dispatch(cleanError());
     }
   }, [error]);
 
   useEffect(() => {
     if (
-      activeChat.trim() !== "" &&
-      activeChat === chat.uuid &&
+      activeChat &&
+      activeChat.uuid === chat.uuid &&
       authUser &&
       !searching &&
       !loading
@@ -75,7 +74,7 @@ const Chat = ({ removeChat, chat, messageCreatedAt }: ChatProps) => {
   }, [activeChat]);
 
   const setActive = () => {
-    dispatch(setActiveChat(chat.uuid));
+    dispatch(setActiveChat({ uuid: chat.uuid, receiver: chat.receiver }));
   };
 
   interface DeleteForMeResponse {
@@ -96,7 +95,7 @@ const Chat = ({ removeChat, chat, messageCreatedAt }: ChatProps) => {
         if (res.data.success) {
           //delete chat from parent chats
           const chatToRemove = res.data.chat_uuid;
-          dispatch(setActiveChat(""));
+          dispatch(setActiveChat(null));
           removeChat(chatToRemove);
         }
       })
@@ -107,7 +106,6 @@ const Chat = ({ removeChat, chat, messageCreatedAt }: ChatProps) => {
 
   const deleteForAll = (e: React.MouseEvent, chatUUID: string) => {
     e.stopPropagation();
-
     socket.emit("delete chat", { room: chatUUID, chats });
   };
   return (
@@ -116,7 +114,7 @@ const Chat = ({ removeChat, chat, messageCreatedAt }: ChatProps) => {
       onContextMenu={() => setIsDeleting(true)}
       onClick={setActive}
       className={`chat bg-ms-darker relative row-span-1 py-4 flex items-center px-4 cursor-pointer ${
-        activeChat === chat.uuid ? "active" : ""
+        activeChat?.uuid === chat.uuid ? "active" : ""
       }`}
     >
       <div className="receiver  ">

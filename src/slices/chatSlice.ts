@@ -1,18 +1,16 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { ChatType, Message } from "../types";
+import type { ChatType, User } from "../types";
 
 export interface ChatState {
   chats: ChatType[];
-  activeChat: string;
+  activeChat: { uuid: string; receiver: User } | null;
   loading: boolean;
-  messages: Message[];
 }
 
 const initialState: ChatState = {
   chats: [],
-  activeChat: "",
+  activeChat: null,
   loading: false,
-  messages: [],
 };
 
 export const chatSlice = createSlice({
@@ -25,15 +23,11 @@ export const chatSlice = createSlice({
     finishedChatLoading: (state: ChatState) => {
       state.loading = false;
     },
-    setMessages: (state: ChatState, action: PayloadAction<Message[]>) => {
-      state.messages = action.payload;
-    },
-    removeMessage: (state: ChatState, action: PayloadAction<string>) => {
-      state.messages = state.messages.filter(
-        (message) => message.uuid !== action.payload
-      );
-    },
-    setActiveChat: (state: ChatState, action: PayloadAction<string>) => {
+
+    setActiveChat: (
+      state: ChatState,
+      action: PayloadAction<{ uuid: string; receiver: User } | null>
+    ) => {
       state.activeChat = action.payload;
     },
     setChats: (state: ChatState, action: PayloadAction<ChatType[]>) => {
@@ -43,13 +37,7 @@ export const chatSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const {
-  setMessages,
-  finishedChatLoading,
-  chatLoading,
-  setActiveChat,
-  removeMessage,
-  setChats,
-} = chatSlice.actions;
+export const { finishedChatLoading, chatLoading, setActiveChat, setChats } =
+  chatSlice.actions;
 
 export default chatSlice.reducer;

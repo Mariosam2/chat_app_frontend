@@ -71,6 +71,7 @@ const Searchbar = ({ authUser }: SearchbarProps) => {
   const handleClickOnResult = (result: User | MessageSearchResult) => {
     dispatch(clickResult(result));
     dispatch(isSearching(false));
+    dispatch(setQuery(""));
   };
 
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {

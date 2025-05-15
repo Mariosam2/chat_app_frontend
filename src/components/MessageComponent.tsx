@@ -5,9 +5,14 @@ import type { RootState } from "..";
 import { useDispatch } from "react-redux";
 import { chatApi } from "../helpers/axiosInterceptor";
 import { useNavigate } from "react-router";
-import { removeMessage } from "../slices/chatSlice";
 import "./MessageComponent.css";
-import { XMarkIcon, TrashIcon } from "@heroicons/react/24/outline";
+import {
+  XMarkIcon,
+  TrashIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/24/outline";
+import { socket } from "../helpers/socket";
+import { editingMessage, removeMessage } from "../slices/messageSlice";
 
 interface MessageComponentProps {
   message: Message;
@@ -26,6 +31,10 @@ const MessageComponent = ({
   const { clickedResult, query } = useSelector(
     (state: RootState) => state.searchState
   );
+  const { messageToEdit } = useSelector(
+    (state: RootState) => state.messageState
+  );
+  const { activeChat } = useSelector((state: RootState) => state.chatState);
   const [isDeleting, setIsDeleting] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const messageRef = useRef<HTMLDivElement | null>(null);
@@ -62,6 +71,16 @@ const MessageComponent = ({
       }
     }
   }, [message, clickedResult]);
+
+  useEffect(() => {
+    if (messageRef.current && messageToEdit?.uuid === message.uuid) {
+      console.log(messageRef.current);
+      messageRef.current.scrollIntoView({
+        behavior: "instant",
+        block: "center",
+      });
+    }
+  }, [messageToEdit]);
 
   const highlightMatch = (string: string, query: string) => {
     const newBody = string.replace(
@@ -101,37 +120,25 @@ const MessageComponent = ({
       });
   };
 
-  /*  interface DeleteForAllResponse {
-    success: boolean;
-    message: string;
-    message_uuid: string;
-  } */
-
   const deleteForAll = () => {
-    /* chatApi
-      .delete<DeleteForAllResponse>(
-        `/api/messages/delete-for-all/${messageUUID}`
-      )
-      .then((res) => {
-        if (res.data.success) {
-          const messageToRemove = res.data.message_uuid;
-          //dispatch remove message
-          dispatch(removeMessage(messageToRemove));
-        }
-      })
-      .catch((err) => {
-        navigate(`/error/${err.response.status}/${err.response.data.message}`);
-      }); */
-    //emit socket event for message deletion
+    socket.emit("delete message", {
+      room: activeChat?.uuid,
+      message: message.uuid,
+      status: message.status,
+    });
   };
 
   return (
-    <>
+    <div
+      className={`message-container px-4 ${
+        messageToEdit && messageToEdit.uuid === message.uuid ? "selected" : ""
+      }`}
+    >
       <div
         ref={messageRef}
         onContextMenu={() => setIsDeleting(!isDeleting)}
         data-index={index}
-        className={`message cursor-pointer relative max-w-xs w-max my-4 rounded-4xl pb-7 p-4 pe-8  ${
+        className={`message min-w-[80px] cursor-pointer relative max-w-xs w-max my-4 rounded-[20px] pb-7 p-4 pe-8  ${
           message.status === "sent"
             ? "bg-ms-almost-white text-ms-dark me-auto"
             : "  bg-ms-secondary text-ms-almost-white ms-auto"
@@ -155,30 +162,41 @@ const MessageComponent = ({
         </span>
         <div
           ref={deletePanel}
-          className={`delete-panel ${
+          className={`delete-panel flex w-max ${
             isDeleting ? "show" : ""
-          }  absolute right-0 z-10 top-0 text-sm font-light  bg-ms-dark p-3 pe-6 rounded-2xl text-ms-almost-white`}
+          }  absolute left-5/6 z-10 top-0 text-sm font-light  bg-ms-dark p-3 pe-6 rounded-2xl text-ms-almost-white`}
         >
           <XMarkIcon
             onClick={() => setIsDeleting(false)}
             className="size-5 p-0.5 absolute right-0.5 top-0.5 "
           />
+          <div
+            onClick={() =>
+              dispatch(
+                editingMessage({ isEditing: true, messageToEdit: message })
+              )
+            }
+            className="edit-message flex items-center h-full p-2 bg-ms-secondary rounded-xl"
+          >
+            Edit
+            <PencilSquareIcon className="size-4 ms-0.5" />
+          </div>
 
           <div
             onClick={() => deleteForMe(message, authUser ? authUser?.uuid : "")}
-            className="delete-for-me bg-ms-muted mb-3  cursor-pointer  p-2 rounded-xl flex items-center"
+            className="delete-for-me bg-ms-muted mx-3  h-full cursor-pointer  p-2 rounded-xl flex items-center"
           >
             Delete for me <TrashIcon className="size-4 ms-0.5" />
           </div>
           <div
             onClick={() => deleteForAll()}
-            className="delete-for-me bg-amber-700 cursor-pointer  p-2 rounded-xl  flex items-center"
+            className="delete-for-me bg-amber-700 cursor-pointer h-full p-2 rounded-xl  flex items-center"
           >
             Delete for all <TrashIcon className="size-4 ms-0.5" />
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

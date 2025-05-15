@@ -1,4 +1,4 @@
-import { useEffect, type JSX } from "react";
+import { useEffect, useLayoutEffect, type JSX } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../index";
 import { chatApi } from "../helpers/axiosInterceptor";
@@ -7,7 +7,6 @@ import "./Dashboard.css";
 import Chat from "./Chat";
 import { type ChatType } from "../types";
 import logo from "../assets/logo.png";
-import SendMessage from "./SendMessage";
 import type { MessageSearchResult, User } from "../types";
 import Profile from "./Profile";
 import Searchbar from "./Searchbar";
@@ -15,7 +14,8 @@ import { useDispatch } from "react-redux";
 import { setActiveChat, setChats } from "../slices/chatSlice";
 import Messages from "./Messages";
 import { getHoursMinutesFormatted } from "../helpers/helpers";
-import { socket } from "../helpers/socket";
+import { retrySocketConnection, socket } from "../helpers/socket";
+import SendMessage from "./SendMessage";
 
 const Dashboard = () => {
   const { authUser } = useSelector((state: RootState) => state.authState);
@@ -33,7 +33,37 @@ const Dashboard = () => {
     setChats(updatedChats);
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    socket.connect();
+    socket.on(
+      "connect",
+
+      () => {
+        console.log("connected to socket");
+      }
+    );
+    //on connection error retry to connect 5 times with a refresh token
+    const maxAttemps = 5;
+    let count = 0;
+
+    socket.on("connect_error", (error: unknown) => {
+      console.log("connection error", error);
+      if (count < maxAttemps) {
+        console.log("retrying connection");
+        setTimeout(async () => {
+          await retrySocketConnection();
+          count = count + 1;
+        }, 500);
+      }
+    });
+
+    socket.on("chat error", ({ error }: { error: Error | string }) => {
+      navigate(`/error/${error instanceof Error ? error.message : error}`);
+    });
+    socket.on("message error", ({ error }: { error: Error | string }) => {
+      console.log(error);
+      navigate(`/error/${error instanceof Error ? error.message : error}`);
+    });
     socket.on(
       "chat deleted",
       ({ updatedChats }: { updatedChats: ChatType[] }) => {
@@ -77,7 +107,9 @@ const Dashboard = () => {
           if (res.data.success) {
             const newChat = res.data.chat;
             dispatch(setChats([...chats, newChat]));
-            dispatch(setActiveChat(newChat.uuid));
+            dispatch(
+              setActiveChat({ uuid: newChat.uuid, receiver: newChat.receiver })
+            );
           }
         })
         .catch((err) => {
@@ -85,19 +117,18 @@ const Dashboard = () => {
             const chatInCommon = err.response.data.chat;
             dispatch(setActiveChat(chatInCommon));
           } else {
-            navigate(
-              `/error/${err.response.status}/${err.response.data.message}`
-            );
+            navigate(`/error/${err.response.data.message}`);
           }
         });
     } else if (isMessageSearchResult(clickedResult)) {
+      console.log(clickedResult);
       //look for the chat in the chats panel, set it active, look for the message and scroll it into view
       const userChatsUUIDS = chats.map((chat) => chat.uuid);
       if (userChatsUUIDS.includes(clickedResult.chat.uuid)) {
-        const findChat = userChatsUUIDS.find(
-          (uuid) => uuid === clickedResult.chat.uuid
+        const findChat = chats.find(
+          (chat) => chat.uuid === clickedResult.chat.uuid
         );
-        if (findChat && findChat?.trim() !== "") {
+        if (findChat) {
           //console.log(findChat);
           dispatch(setActiveChat(findChat));
         }

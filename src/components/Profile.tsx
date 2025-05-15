@@ -3,11 +3,12 @@ import logoutIcon from "../assets/logout.png";
 import { chatApi, type AuthUser } from "../helpers/axiosInterceptor";
 import { authenticate, saveAuthUser } from "../slices/authSlice";
 import { useNavigate } from "react-router";
-import { isEditing } from "../slices/profileSlice";
+import { editing } from "../slices/profileSlice";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { createPortal } from "react-dom";
 import EditProfile from "./EditProfile";
 import "./Profile.css";
+import { socket } from "../helpers/socket";
 
 interface ProfileProps {
   authUser: AuthUser | null;
@@ -31,6 +32,7 @@ const Profile = ({ authUser }: ProfileProps) => {
           dispatch(saveAuthUser(null));
           dispatch(authenticate(false));
           chatApi.defaults.headers.common["Authorization"] = "";
+          socket.disconnect();
         }
       })
       .catch((err) => {
@@ -39,7 +41,7 @@ const Profile = ({ authUser }: ProfileProps) => {
   };
 
   const editingProfile = () => {
-    dispatch(isEditing(true));
+    dispatch(editing(true));
   };
 
   return (

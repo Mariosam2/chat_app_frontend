@@ -57,12 +57,16 @@ export interface MessageState {
   loading: boolean;
   messages: Message[];
   error: unknown;
+  isEditing: boolean;
+  messageToEdit: Message | null;
 }
 
 const initialState: MessageState = {
   messages: [],
   loading: false,
   error: null,
+  isEditing: false,
+  messageToEdit: null,
 };
 
 export const messageSlice = createSlice({
@@ -71,6 +75,50 @@ export const messageSlice = createSlice({
   reducers: {
     cleanError: (state: MessageState) => {
       state.error = null;
+    },
+
+    editingMessage: (
+      state: MessageState,
+      action: PayloadAction<{
+        isEditing: boolean;
+        messageToEdit: Message | null;
+      }>
+    ) => {
+      const { isEditing, messageToEdit } = action.payload;
+      state.isEditing = isEditing;
+      state.messageToEdit = messageToEdit;
+    },
+    setMessages: (state: MessageState, action: PayloadAction<Message[]>) => {
+      state.messages = action.payload;
+    },
+    addMessage: (state: MessageState, action: PayloadAction<Message>) => {
+      state.messages.push(action.payload);
+    },
+
+    removeMessage: (state: MessageState, action: PayloadAction<string>) => {
+      state.messages = state.messages.filter(
+        (message) => message.uuid !== action.payload
+      );
+    },
+    editMessage: (
+      state: MessageState,
+      action: PayloadAction<{ messageUUID: string; newMessage: Message }>
+    ) => {
+      const temp = state.messages.map((message) => {
+        const { uuid } = message;
+        return uuid;
+      });
+
+      const messageToEdit = temp.find(
+        (uuid) => uuid === action.payload.messageUUID
+      );
+
+      if (messageToEdit) {
+        const messageToEditIdx = temp.indexOf(messageToEdit);
+        console.log(messageToEditIdx);
+
+        state.messages[messageToEditIdx] = action.payload.newMessage;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -97,5 +145,12 @@ export const messageSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { cleanError } = messageSlice.actions;
+export const {
+  cleanError,
+  addMessage,
+  editingMessage,
+  removeMessage,
+  editMessage,
+  setMessages,
+} = messageSlice.actions;
 export default messageSlice.reducer;

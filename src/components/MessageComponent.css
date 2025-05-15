@@ -8,3 +8,10 @@
   opacity: 1;
   transition: all 0.25s ease-out;
 }
+
+.message-container.selected {
+  background: rgba(55, 121, 247, 0.4);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(2.5px);
+  -webkit-backdrop-filter: blur(2.5px);
+}

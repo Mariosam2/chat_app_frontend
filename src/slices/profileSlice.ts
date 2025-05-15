@@ -1,14 +1,14 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export interface ProfileState {
-  editing: boolean;
+  isEditing: boolean;
   passwordHidden: boolean;
   confirmPasswordHidden: boolean;
   userHasBeenEdited: boolean;
 }
 
 const initialState: ProfileState = {
-  editing: false,
+  isEditing: false,
   passwordHidden: false,
   confirmPasswordHidden: false,
   userHasBeenEdited: false,
@@ -18,8 +18,8 @@ export const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
-    isEditing: (state: ProfileState, action: PayloadAction<boolean>) => {
-      state.editing = action.payload;
+    editing: (state: ProfileState, action: PayloadAction<boolean>) => {
+      state.isEditing = action.payload;
     },
     setPasswordHidden: (
       state: ProfileState,
@@ -42,7 +42,7 @@ export const profileSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
-  isEditing,
+  editing,
   setConfirmPasswordHidden,
   setPasswordHidden,
   userEdited,

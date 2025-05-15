@@ -4,6 +4,7 @@ import { chatApi } from "./axiosInterceptor";
 export const socket = io(import.meta.env.VITE_BASE_URL, {
   secure: false,
   reconnection: false,
+  autoConnect: false,
 });
 
 interface RefreshTokenResponse {
@@ -18,11 +19,17 @@ const getToken = async () => {
 };
 
 export const retrySocketConnection = async () => {
+  //refreshing the token and reconnect the socket
   socket.disconnect();
-
-  console.log("Provo a riconnettermi...");
-  const { token } = await getToken();
-
-  socket.io.opts.query = { token };
-  socket.connect();
+  try {
+    const { token } = await getToken();
+    console.log(token);
+    console.log("retrying connection");
+    socket.io.opts.query = { token };
+    socket.connect();
+  } catch (err: unknown) {
+    console.log(err);
+    socket.io.opts.query = { token: "" };
+    socket.connect();
+  }
 };

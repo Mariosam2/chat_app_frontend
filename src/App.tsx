@@ -18,7 +18,6 @@ import RequireAuth from "./components/RequireAuth";
 import RequireNoAuth from "./components/RequireNoAuth";
 import { useSelector } from "react-redux";
 import type { RootState } from ".";
-import { retrySocketConnection, socket } from "./helpers/socket";
 
 interface AuthUserResponse {
   success: boolean;
@@ -27,33 +26,12 @@ interface AuthUserResponse {
 
 function App() {
   const routePathname = useLocation().pathname;
-
   const { loading } = useSelector((state: RootState) => state.authState);
   const dispatch = useDispatch();
 
   //set loading everytime before the page is printed
   useLayoutEffect(() => {
     dispatch(authLoading());
-
-    socket.on(
-      "connect",
-
-      () => {
-        console.log("connected to socket");
-      }
-    );
-
-    const maxAttemps = 5;
-    let count = 0;
-
-    socket.on("connect_error", function () {
-      if (count < maxAttemps) {
-        setTimeout(() => {
-          retrySocketConnection();
-          count = count + 1;
-        }, 500);
-      }
-    });
   }, []);
 
   //when components mount make the call to check authentication
@@ -122,7 +100,7 @@ function App() {
               </RequireAuth>
             }
           />
-          <Route path="/error/:statuscode/:message" element={<Error />} />
+          <Route path="/error/:statuscode?/:message" element={<Error />} />
         </Routes>
       </div>
     );
