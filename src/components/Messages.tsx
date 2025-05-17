@@ -55,7 +55,7 @@ const Messages = () => {
           ...rest,
           status: authUser?.uuid === senderUUID ? "sent" : "received",
         };
-
+        //console.log("editmessage");
         dispatch(editMessage({ messageUUID: message, newMessage }));
       }
     );

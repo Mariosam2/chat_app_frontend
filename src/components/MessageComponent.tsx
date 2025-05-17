@@ -74,7 +74,7 @@ const MessageComponent = ({
 
   useEffect(() => {
     if (messageRef.current && messageToEdit?.uuid === message.uuid) {
-      console.log(messageRef.current);
+      //console.log(messageRef.current);
       messageRef.current.scrollIntoView({
         behavior: "instant",
         block: "center",
@@ -128,6 +128,24 @@ const MessageComponent = ({
     });
   };
 
+  const ShowEditButton = () => {
+    if (message.status === "sent") {
+      return (
+        <div
+          onClick={() =>
+            dispatch(
+              editingMessage({ isEditing: true, messageToEdit: message })
+            )
+          }
+          className="edit-message flex items-center h-full p-2 bg-ms-secondary rounded-xl"
+        >
+          Edit
+          <PencilSquareIcon className="size-4 ms-0.5" />
+        </div>
+      );
+    }
+  };
+
   return (
     <div
       className={`message-container px-4 ${
@@ -170,17 +188,7 @@ const MessageComponent = ({
             onClick={() => setIsDeleting(false)}
             className="size-5 p-0.5 absolute right-0.5 top-0.5 "
           />
-          <div
-            onClick={() =>
-              dispatch(
-                editingMessage({ isEditing: true, messageToEdit: message })
-              )
-            }
-            className="edit-message flex items-center h-full p-2 bg-ms-secondary rounded-xl"
-          >
-            Edit
-            <PencilSquareIcon className="size-4 ms-0.5" />
-          </div>
+          <ShowEditButton />
 
           <div
             onClick={() => deleteForMe(message, authUser ? authUser?.uuid : "")}

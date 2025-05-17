@@ -1,45 +1,19 @@
 import { useDispatch } from "react-redux";
 import logoutIcon from "../assets/logout.png";
-import { chatApi, type AuthUser } from "../helpers/axiosInterceptor";
-import { authenticate, saveAuthUser } from "../slices/authSlice";
-import { useNavigate } from "react-router";
 import { editing } from "../slices/profileSlice";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { createPortal } from "react-dom";
 import EditProfile from "./EditProfile";
 import "./Profile.css";
-import { socket } from "../helpers/socket";
+import type { User } from "../types";
 
 interface ProfileProps {
-  authUser: AuthUser | null;
+  authUser: User | null;
+  logout: () => void;
 }
 
-const Profile = ({ authUser }: ProfileProps) => {
+const Profile = ({ authUser, logout }: ProfileProps) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  interface LogoutResponse {
-    success: boolean;
-    message: string;
-  }
-
-  const logout = () => {
-    chatApi
-      .post<LogoutResponse>("/api/auth/logout")
-      .then((res) => {
-        if (res.data.success) {
-          //set the authUser to null and authenticated to false
-          dispatch(saveAuthUser(null));
-          dispatch(authenticate(false));
-          chatApi.defaults.headers.common["Authorization"] = "";
-          socket.disconnect();
-        }
-      })
-      .catch((err) => {
-        navigate(`/error/${err.response.status}/${err.response.data.message}`);
-      });
-  };
-
   const editingProfile = () => {
     dispatch(editing(true));
   };

@@ -115,7 +115,7 @@ export const messageSlice = createSlice({
 
       if (messageToEdit) {
         const messageToEditIdx = temp.indexOf(messageToEdit);
-        console.log(messageToEditIdx);
+        //console.log(messageToEditIdx);
 
         state.messages[messageToEditIdx] = action.payload.newMessage;
       }

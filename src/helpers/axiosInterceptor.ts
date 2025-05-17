@@ -1,12 +1,5 @@
 import axios from "axios";
 
-export interface AuthUser {
-  uuid: string;
-  username: string;
-  email: string;
-  profile_picture: string;
-}
-
 interface RefreshTokenResponse {
   success: boolean;
   token: string;

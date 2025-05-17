@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { chatApi, type AuthUser } from "../helpers/axiosInterceptor";
+import { chatApi } from "../helpers/axiosInterceptor";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { useSelector } from "react-redux";
 import type { RootState } from "../index";
@@ -15,9 +15,11 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import userEditedLottie from "../assets/user_edited.lottie";
 import { saveAuthUser } from "../slices/authSlice";
+import { socket } from "../helpers/socket";
+import type { User } from "../types";
 
 interface EditProfileProps {
-  authUser: AuthUser | null;
+  authUser: User | null;
 }
 
 const EditProfile = ({ authUser }: EditProfileProps) => {
@@ -83,7 +85,7 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
   interface UpdateResponse {
     success: boolean;
     message: string;
-    user: AuthUser;
+    user: User;
   }
 
   const updateUser = (e: React.FormEvent) => {
@@ -135,6 +137,11 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
           //redirect to error component
         }
       });
+  };
+
+  const deleteUser = () => {
+    socket.emit("delete user", { user: authUser?.uuid });
+    closePanel();
   };
 
   const ShowPasswordEye = () => {
@@ -301,11 +308,19 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
                 : ""}
             </span>
           </div>
-          <div
-            onClick={updateUser}
-            className="save bg-ms-secondary px-4 py-2 rounded-2xl cursor-pointer mt-6 w-fit"
-          >
-            Save
+          <div className="buttons flex">
+            <div
+              onClick={updateUser}
+              className="save bg-ms-secondary px-4 py-2 rounded-2xl cursor-pointer mt-6 w-fit"
+            >
+              Save
+            </div>
+            <div
+              onClick={deleteUser}
+              className="delete-account px-4 py-2 rounded-2xl bg-amber-700 ms-auto cursor-pointer w-fit mt-6"
+            >
+              Delete account
+            </div>
           </div>
         </form>
         <div

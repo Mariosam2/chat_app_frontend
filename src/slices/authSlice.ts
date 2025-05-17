@@ -1,10 +1,10 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-import type { AuthUser } from "../helpers/axiosInterceptor";
+import type { User } from "../types";
 
 interface authState {
   authenticated: boolean;
-  authUser: AuthUser | null;
+  authUser: User | null;
   loading: boolean;
 }
 
@@ -24,10 +24,7 @@ export const authSlice = createSlice({
     finishedAuthLoading: (state: authState) => {
       state.loading = false;
     },
-    saveAuthUser: (
-      state: authState,
-      action: PayloadAction<AuthUser | null>
-    ) => {
+    saveAuthUser: (state: authState, action: PayloadAction<User | null>) => {
       state.authUser = action.payload !== null ? { ...action.payload } : null;
     },
     authenticate: (state: authState, action: PayloadAction<boolean>) => {

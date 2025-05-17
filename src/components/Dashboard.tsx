@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, type JSX } from "react";
+import { useEffect, type JSX } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../index";
 import { chatApi } from "../helpers/axiosInterceptor";
@@ -14,12 +14,14 @@ import { useDispatch } from "react-redux";
 import { setActiveChat, setChats } from "../slices/chatSlice";
 import Messages from "./Messages";
 import { getHoursMinutesFormatted } from "../helpers/helpers";
-import { retrySocketConnection, socket } from "../helpers/socket";
+import { socket } from "../helpers/socket";
 import SendMessage from "./SendMessage";
+import { authenticate, saveAuthUser } from "../slices/authSlice";
 
 const Dashboard = () => {
   const { authUser } = useSelector((state: RootState) => state.authState);
   const { chats } = useSelector((state: RootState) => state.chatState);
+
   const dispatch = useDispatch();
 
   const { clickedResult } = useSelector(
@@ -33,30 +35,42 @@ const Dashboard = () => {
     setChats(updatedChats);
   };
 
-  useLayoutEffect(() => {
-    socket.connect();
+  interface LogoutResponse {
+    success: boolean;
+    message: string;
+  }
+
+  const logout = () => {
+    chatApi
+      .post<LogoutResponse>("/api/auth/logout")
+      .then((res) => {
+        if (res.data.success) {
+          //set the authUser to null and authenticated to false
+          chatApi.defaults.headers.common["Authorization"] = "";
+          socket.io.opts.auth = {};
+          socket.removeAllListeners(); // rimuove TUTTI gli event listener
+          socket.disconnect();
+          dispatch(saveAuthUser(null));
+          dispatch(authenticate(false));
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        navigate(`/error/${err.response.status}/${err.response.data.message}`);
+      });
+  };
+
+  useEffect(() => {
     socket.on(
       "connect",
 
       () => {
-        console.log("connected to socket");
+        console.log("connected");
       }
     );
-    //on connection error retry to connect 5 times with a refresh token
-    const maxAttemps = 5;
-    let count = 0;
-
-    socket.on("connect_error", (error: unknown) => {
-      console.log("connection error", error);
-      if (count < maxAttemps) {
-        console.log("retrying connection");
-        setTimeout(async () => {
-          await retrySocketConnection();
-          count = count + 1;
-        }, 500);
-      }
+    socket.on("logout", () => {
+      logout();
     });
-
     socket.on("chat error", ({ error }: { error: Error | string }) => {
       navigate(`/error/${error instanceof Error ? error.message : error}`);
     });
@@ -70,6 +84,8 @@ const Dashboard = () => {
         dispatch(setChats(updatedChats));
       }
     );
+
+    socket.connect();
   }, []);
 
   useEffect(() => {
@@ -227,7 +243,7 @@ const Dashboard = () => {
   return (
     <section className="dashboard h-screen grid grid-cols-10 grid-rows-10">
       <div className="top-panel col-span-10 row-span-1 col-start-1 grid grid-cols-10  bg-ms-darker border-b border-ms-dark items-center">
-        <Profile authUser={authUser} />
+        <Profile logout={logout} authUser={authUser} />
         <NavLink
           to={"/"}
           id="logo"

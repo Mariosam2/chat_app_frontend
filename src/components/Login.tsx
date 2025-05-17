@@ -7,13 +7,15 @@ import axios from "axios";
 
 import { chatApi } from "../helpers/axiosInterceptor";
 import { useDispatch } from "react-redux";
-import { authenticate } from "../slices/authSlice";
+import { authenticate, saveAuthUser } from "../slices/authSlice";
 import { useSelector } from "react-redux";
 import type { RootState } from "..";
+import type { User } from "../types";
 
 interface LoginResponse {
   success: boolean;
   token: string;
+  authUser: User;
 }
 
 const Login = () => {
@@ -66,6 +68,7 @@ const Login = () => {
             "Authorization"
           ] = `Bearer ${res.data.token}`;
           dispatch(authenticate(true));
+          dispatch(saveAuthUser(res.data.authUser));
         }
       })
       .catch((err) => {

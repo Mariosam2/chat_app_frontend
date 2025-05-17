@@ -6,7 +6,7 @@ import Error from "./components/Error";
 import Dashboard from "./components/Dashboard";
 import { useLocation } from "react-router";
 import { useEffect, useLayoutEffect } from "react";
-import { chatApi, type AuthUser } from "./helpers/axiosInterceptor";
+import { chatApi } from "./helpers/axiosInterceptor";
 import { useDispatch } from "react-redux";
 import {
   authenticate,
@@ -18,15 +18,18 @@ import RequireAuth from "./components/RequireAuth";
 import RequireNoAuth from "./components/RequireNoAuth";
 import { useSelector } from "react-redux";
 import type { RootState } from ".";
+import type { User } from "./types";
 
 interface AuthUserResponse {
   success: boolean;
-  authUser: AuthUser;
+  authUser: User;
 }
 
 function App() {
   const routePathname = useLocation().pathname;
-  const { loading } = useSelector((state: RootState) => state.authState);
+  const { loading, authenticated } = useSelector(
+    (state: RootState) => state.authState
+  );
   const dispatch = useDispatch();
 
   //set loading everytime before the page is printed
@@ -40,7 +43,7 @@ function App() {
       e.preventDefault();
     });
     //console.log("app level", routePathname);
-    if (routePathname !== "/") {
+    if (routePathname !== "/" && !authenticated) {
       getAuthUser();
     } else {
       dispatch(finishedAuthLoading());
@@ -56,6 +59,7 @@ function App() {
         if (res.data.success) {
           //console.log("response");
           //save the logged in user in redux
+
           dispatch(authenticate(true));
           dispatch(saveAuthUser(res.data.authUser));
           dispatch(finishedAuthLoading());
