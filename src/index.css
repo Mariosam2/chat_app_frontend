@@ -11,6 +11,8 @@
   --color-ms-yellow: #f8dea5;
   --color-ms-cyan: #6098f8;
   --color-ms-layover: rgba(10, 10, 10, 0.5);
+  --breakpoint-xxl: 1650px;
+  --breakpoint-xxs: 380px;
 }
 *::-webkit-scrollbar {
   background-color: transparent;

@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { chatApi, type AuthUser } from "../helpers/axiosInterceptor";
+import { chatApi } from "../helpers/axiosInterceptor";
 import { useEffect, useState } from "react";
 import lodash from "lodash";
 import type { MessageSearchResult, User } from "../types";
@@ -19,7 +19,7 @@ interface SearchResponse {
 }
 
 interface SearchbarProps {
-  authUser: AuthUser | null;
+  authUser: User | null;
 }
 
 const Searchbar = ({ authUser }: SearchbarProps) => {
@@ -211,7 +211,7 @@ const Searchbar = ({ authUser }: SearchbarProps) => {
 
   return (
     <>
-      <div className="searchbar h-[40px] col-span-5 col-start-4 bg-ms-dark rounded-xl p-2 text-ms-muted flex items-center relative ">
+      <div className="searchbar h-[40px] col-span-1 row-span-1 row-start-2 md:row-start-1 md:col-start-7 md:col-span-4 md:me-4 lg:col-start-6  lg:me-0  2xl:col-start-4 bg-ms-dark rounded-xl p-2 text-ms-muted flex items-center relative ">
         <MagnifyingGlassIcon className="size-5 me-1 " />
         <input
           onChange={handleQueryChange}

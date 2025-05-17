@@ -1,0 +1,28 @@
+.login-form .heading,
+.register-form .heading {
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.login-panel,
+.register-panel {
+  background-image: url("../assets/bg-panel.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.layover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.registered-popup {
+  transform: scale(0);
+  opacity: 0;
+}
+
+.registered-popup.show {
+  transform: scale(1);
+  opacity: 1;
+  transition: all 0.25s ease-out;
+}

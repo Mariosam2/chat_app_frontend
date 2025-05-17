@@ -26,12 +26,14 @@ const Home = () => {
         <div className="glow right"></div>
         <NetworkSVG />
         <div className=" max-w-2xl mx-auto text-ms-almost-white pt-52">
-          <h1 className="heading">Connect with people</h1>
-          <div className="content font-light max-w-4/6 mx-auto text-center text-ms-muted mt-6 text-[18px]">
+          <h1 className="heading text-center font-bold text-4xl md:text-[64px] ">
+            Connect with people
+          </h1>
+          <div className="content font-light text-base md:text-lg max-w-4/6 mx-auto text-center text-ms-muted mt-6 ">
             Connect instantly and effortlessly. Chat App brings people together
             with fast, secure, and intuitive messaging—anytime, anywhere.
           </div>
-          <div className="call-to-action relative bg-ms-secondary rounded-full px-5 pt-2.5 pb-3 w-fit font-medium mt-8 mx-auto">
+          <div className="call-to-action relative text-sm md:text-base bg-ms-secondary rounded-full px-5 pt-2.5 pb-3 w-fit font-medium mt-8 mx-auto">
             Start messaging now
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -54,14 +56,14 @@ const Home = () => {
               />
             </svg>
           </div>
-          <div className="preview mx-auto relative translate-y-[80px] rounded-2xl">
-            <img className="preview-img rounded-2xl" src={previewImg} alt="" />
+          <div className="preview mx-4 relative w-fit  translate-y-[80px] rounded-2xl">
+            <img className="preview-img  rounded-2xl" src={previewImg} alt="" />
           </div>
         </div>
       </section>
       <section className="features  pt-32 pb-40 p-4 bg-ms-almost-white">
-        <div className="sponsors max-w-2xl mx-auto gap-x-6 grid grid-cols-3 place-items-center">
-          <div className="sponsor flex">
+        <div className="sponsors max-w-2xl mx-auto px-12 gap-y-4 xxs:gap-y-0 xxs:px-8 sm:px-0 xxs:gap-x-6 grid grid-cols-1  xxs:grid-cols-3 place-items-center">
+          <div className="sponsor">
             <img src={kansasLogo} alt="" />
           </div>
           <div className="sponsor">
@@ -72,17 +74,17 @@ const Home = () => {
           </div>
         </div>
         <div className="container pt-24 mx-auto  flex flex-col items-center">
-          <h1 className="text-5xl  font-bold text-ms-dark">
+          <h1 className="text-3xl md:text-4xl text-center lg:text-5xl font-bold text-ms-dark">
             Some of our features that will help you
           </h1>
-          <p className="features-description text-ms-muted text-center font-medium pt-16 max-w-2xl">
+          <p className="features-description text-ms-muted text-center font-medium pt-10 md:pt-12 lg:pt-16 max-w-2xl">
             Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis
             perspiciatis laborum distinctio, animi consectetur culpa
             voluptatibus magni laboriosam obcaecati, dolorum aperiam mollitia!
             Unde aspernatur molestias accusantium nam quam tempore recusandae!
           </p>
 
-          <div className="grid grid-cols-3 pt-32 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pt-32 gap-2">
             <div className="feature p-6">
               <div className="feature-icon communication size-10">
                 <ChatBubbleOvalLeftEllipsisIcon className="w-full p-1 fill-ms-green" />
@@ -123,8 +125,8 @@ const Home = () => {
       </section>
       <section className="footer relative bg-ms-dark text-ms-almost-white p-4">
         <div className="glow left"></div>
-        <div className="max-w-6xl flex   items-center mx-auto">
-          <ul className="footer-links pt-6 p-4">
+        <div className="max-w-6xl grid grid-cols-2 sm:grid-cols-10 place-items-center   items-center mx-auto">
+          <ul className="footer-links pt-6 p-4 justify-self-end sm:col-span-2">
             <li className="heading pb-3">
               <h4 className="text-xl font-semibold">Useful Links</h4>
             </li>
@@ -133,7 +135,7 @@ const Home = () => {
             <li className="footer-link p-2 ps-1 text-ms-muted">Useful Link</li>
             <li className="footer-link p-2 ps-1 text-ms-muted">Useful Link</li>
           </ul>
-          <ul className="footer-links  pt-6 p-4 ">
+          <ul className="footer-links  pt-6 p-4 justify-self-start sm:col-span-2 ">
             <li className="heading pb-3">
               <h4 className="text-xl font-semibold">Useful Links</h4>
             </li>
@@ -142,7 +144,7 @@ const Home = () => {
             <li className="footer-link p-2 ps-1 text-ms-muted">Useful Link</li>
             <li className="footer-link p-2 ps-1 text-ms-muted">Useful Link</li>
           </ul>
-          <div className="brand ms-auto">
+          <div className="brand pt-6 col-span-2 sm:col-start-8">
             <div id="footer-logo" className="max-w-[120px]">
               <img src={logo} alt="chat app logo" />
             </div>

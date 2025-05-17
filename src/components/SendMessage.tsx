@@ -33,6 +33,12 @@ const SendMessage = () => {
     }
   };
 
+  const handleSpaceKey = (e: React.KeyboardEvent) => {
+    if (e.code === "Enter") {
+      sendMessage();
+    }
+  };
+
   const editMessage = () => {
     socket.emit("edit message", {
       room: activeChat?.uuid,
@@ -76,6 +82,7 @@ const SendMessage = () => {
         <FaceSmileIcon className="size-8 mx-auto text-ms-muted" />
       </div>
       <input
+        onKeyDown={handleSpaceKey}
         onChange={handleMessageChange}
         placeholder="Write message..."
         className="bg-ms-darker focus:outline-none text-ms-almost-white h-[70%] w-full p-2  ms-auto"

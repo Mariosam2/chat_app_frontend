@@ -63,11 +63,11 @@ const MessageComponent = ({
   useEffect(() => {
     if (message && clickedResult) {
       if (message.uuid === clickedResult.uuid) {
-        const activeMessage = document.querySelector(
-          `.message[data-index="${index}"`
-        );
-        activeMessage?.scrollIntoView();
+        console.log(clickedResult.uuid, message.uuid);
         setActiveIndex(index);
+        setTimeout(() => {
+          messageRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, 250);
       }
     }
   }, [message, clickedResult]);

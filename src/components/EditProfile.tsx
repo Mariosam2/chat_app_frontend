@@ -13,7 +13,7 @@ import {
 import "./EditProfile.css";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import userEditedLottie from "../assets/user_edited.lottie";
+import userEditedLottie from "../assets/success.lottie";
 import { saveAuthUser } from "../slices/authSlice";
 import { socket } from "../helpers/socket";
 import type { User } from "../types";

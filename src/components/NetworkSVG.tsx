@@ -51,7 +51,7 @@ const NetworkSVG = () => {
   useEffect(() => {}, []);
 
   return (
-    <div className="w-lg h-full absolute right-0 bottom-[40px]">
+    <div className="w-lg h-full absolute right-0 bottom-[40px] hidden xxl:block">
       <svg
         className="max-w-full h-full"
         id="ewkHI4Tzc3t1"

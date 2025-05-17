@@ -23,11 +23,6 @@
     rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
 }
 
-.jumbo .heading {
-  font-size: 64px;
-  font-weight: 700;
-}
-
 .jumbo .call-to-action {
   cursor: pointer;
   box-shadow: 0 0 20px 5px var(--color-ms-secondary);

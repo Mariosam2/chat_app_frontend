@@ -17,6 +17,7 @@ import { getHoursMinutesFormatted } from "../helpers/helpers";
 import { socket } from "../helpers/socket";
 import SendMessage from "./SendMessage";
 import { authenticate, saveAuthUser } from "../slices/authSlice";
+import { isSearching, setQuery } from "../slices/searchSlice";
 
 const Dashboard = () => {
   const { authUser } = useSelector((state: RootState) => state.authState);
@@ -50,6 +51,8 @@ const Dashboard = () => {
           socket.io.opts.auth = {};
           socket.removeAllListeners(); // rimuove TUTTI gli event listener
           socket.disconnect();
+          dispatch(setQuery(""));
+          dispatch(isSearching(false));
           dispatch(saveAuthUser(null));
           dispatch(authenticate(false));
         }
@@ -241,13 +244,13 @@ const Dashboard = () => {
   };
 
   return (
-    <section className="dashboard h-screen grid grid-cols-10 grid-rows-10">
-      <div className="top-panel col-span-10 row-span-1 col-start-1 grid grid-cols-10  bg-ms-darker border-b border-ms-dark items-center">
+    <section className="dashboard  min-h-screen md:grid md:grid-cols-10 md:grid-rows-10">
+      <div className="top-panel flex flex-col md:col-span-10 md:row-span-1 col-start-1 md:grid md:grid-cols-10  bg-ms-darker border-b border-ms-dark items-center">
         <Profile logout={logout} authUser={authUser} />
         <NavLink
           to={"/"}
           id="logo"
-          className="max-w-[120px] col-span-1 ms-4 p-2"
+          className="max-w-[120px] hidden md:block md:col-span-2 2xl:col-span-1 ms-4 p-2"
         >
           <img src={logo} alt="" />
         </NavLink>

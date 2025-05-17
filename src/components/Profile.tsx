@@ -19,10 +19,10 @@ const Profile = ({ authUser, logout }: ProfileProps) => {
   };
 
   return (
-    <div className="user-profile col-span-2  p-4   flex items-center font-light text-ms-almost-white border-e border-ms-dark ">
+    <div className="user-profile col-span-1 row-span-1 md:col-span-4 lg:col-span-3 2xl:col-span-2  p-4   flex items-center font-light text-ms-almost-white border-e border-ms-dark ">
       <div className="profile-picture">
         <img
-          className=" w-[60px] aspect-square  rounded-full"
+          className=" w-[60px] aspect-square  rounded-full object-cover"
           src={import.meta.env.VITE_BASE_URL + authUser?.profile_picture}
           alt=""
         />
