@@ -30,6 +30,9 @@ export const chatSlice = createSlice({
     ) => {
       state.activeChat = action.payload;
     },
+    removeChat: (state: ChatState, action: PayloadAction<string>) => {
+      state.chats = state.chats.filter((chat) => chat.uuid !== action.payload);
+    },
     setChats: (state: ChatState, action: PayloadAction<ChatType[]>) => {
       state.chats = action.payload;
     },
@@ -37,7 +40,12 @@ export const chatSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { finishedChatLoading, chatLoading, setActiveChat, setChats } =
-  chatSlice.actions;
+export const {
+  finishedChatLoading,
+  chatLoading,
+  setActiveChat,
+  setChats,
+  removeChat,
+} = chatSlice.actions;
 
 export default chatSlice.reducer;

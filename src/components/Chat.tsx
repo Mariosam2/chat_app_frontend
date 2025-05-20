@@ -3,7 +3,7 @@ import { chatApi } from "../helpers/axiosInterceptor";
 import { type ChatType } from "../types";
 import type { AppDispatch, RootState } from "../index";
 import { useDispatch } from "react-redux";
-import { setActiveChat } from "../slices/chatSlice";
+import { removeChat, setActiveChat } from "../slices/chatSlice";
 import { useNavigate } from "react-router";
 import "./Chat.css";
 import { useEffect, useRef, useState } from "react";
@@ -14,10 +14,9 @@ import { cleanError, getMessages, isAxiosError } from "../slices/messageSlice";
 interface ChatProps {
   chat: ChatType;
   messageCreatedAt: string;
-  removeChat: (chat_uuid: string) => void;
 }
 
-const Chat = ({ removeChat, chat, messageCreatedAt }: ChatProps) => {
+const Chat = ({ chat, messageCreatedAt }: ChatProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { authUser } = useSelector((state: RootState) => state.authState);
@@ -100,7 +99,7 @@ const Chat = ({ removeChat, chat, messageCreatedAt }: ChatProps) => {
           //delete chat from parent chats
           const chatToRemove = res.data.chat_uuid;
           dispatch(setActiveChat(null));
-          removeChat(chatToRemove);
+          dispatch(removeChat(chatToRemove));
         }
       })
       .catch((err) => {

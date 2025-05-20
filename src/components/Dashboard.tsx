@@ -10,13 +10,14 @@ import type { MessageSearchResult, User } from "../types";
 import Profile from "./Profile";
 import Searchbar from "./Searchbar";
 import { useDispatch } from "react-redux";
-import { setActiveChat, setChats } from "../slices/chatSlice";
+import { removeChat, setActiveChat, setChats } from "../slices/chatSlice";
 import Messages from "./Messages";
 import { getHoursMinutesFormatted } from "../helpers/helpers";
 import { socket } from "../helpers/socket";
 import SendMessage from "./SendMessage";
 import { authenticate, saveAuthUser } from "../slices/authSlice";
 import { isSearching, setQuery } from "../slices/searchSlice";
+import { ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/24/outline";
 
 const Dashboard = () => {
   const { authUser } = useSelector((state: RootState) => state.authState);
@@ -28,13 +29,6 @@ const Dashboard = () => {
     (state: RootState) => state.searchState
   );
   const navigate = useNavigate();
-
-  const removeChat = (chat_uuid: string) => {
-    //console.log(chat_uuid);
-    const updatedChats = chats.filter((chat) => chat.uuid !== chat_uuid);
-    //console.log(updatedChats);
-    dispatch(setChats(updatedChats));
-  };
 
   interface LogoutResponse {
     success: boolean;
@@ -81,12 +75,9 @@ const Dashboard = () => {
       console.log(error);
       navigate(`/error/${error instanceof Error ? error.message : error}`);
     });
-    socket.on(
-      "chat deleted",
-      ({ updatedChats }: { updatedChats: ChatType[] }) => {
-        dispatch(setChats(updatedChats));
-      }
-    );
+    socket.on("chat deleted", ({ chatUUID }: { chatUUID: string }) => {
+      dispatch(removeChat(chatUUID));
+    });
 
     socket.connect();
   }, []);
@@ -226,7 +217,6 @@ const Dashboard = () => {
           };
           return (
             <Chat
-              removeChat={removeChat}
               key={index}
               chat={chat}
               messageCreatedAt={
@@ -239,7 +229,10 @@ const Dashboard = () => {
         })}
       </div>
     ) : (
-      <div>No chats yet</div>
+      <div className="flex flex-col justify-center items-center py-3 md:pt-20 text-ms-almost-white border-b md:border-b-0 border-ms-dark">
+        <ChatBubbleOvalLeftEllipsisIcon className="size-32" />
+        <div className="text-lg p-3"> No chats yet</div>
+      </div>
     );
   };
 

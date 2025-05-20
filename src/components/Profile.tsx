@@ -28,16 +28,16 @@ const Profile = ({ authUser, logout }: ProfileProps) => {
         />
       </div>
 
-      <div className="username text-lg font-normal  ms-3">
+      <div className="username text-base md:text-lg font-normal  ms-3">
         {authUser?.username}
       </div>
       <PencilSquareIcon
         onClick={editingProfile}
-        className="size-6 ms-3 cursor-pointer "
+        className="size-6 px-0.5 cursor-pointer "
       />
       <img
         onClick={logout}
-        className="size-8 logout cursor-pointer ms-auto p-1.5 bg-ms-secondary rounded-[0.4rem]"
+        className="size-7 logout cursor-pointer ms-auto p-1.5 bg-ms-secondary rounded-[0.4rem]"
         src={logoutIcon}
         alt=""
       />
