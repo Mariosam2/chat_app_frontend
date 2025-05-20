@@ -5,7 +5,7 @@ import Register from "./components/Register";
 import Error from "./components/Error";
 import Dashboard from "./components/Dashboard";
 import { useLocation } from "react-router";
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { chatApi } from "./helpers/axiosInterceptor";
 import { useDispatch } from "react-redux";
 import {
@@ -19,13 +19,14 @@ import RequireNoAuth from "./components/RequireNoAuth";
 import { useSelector } from "react-redux";
 import type { RootState } from ".";
 import type { User } from "./types";
-
+import eruda from "eruda";
 interface AuthUserResponse {
   success: boolean;
   authUser: User;
 }
 
 function App() {
+  const appRef = useRef(null);
   const routePathname = useLocation().pathname;
   const { loading, authenticated } = useSelector(
     (state: RootState) => state.authState
@@ -35,6 +36,12 @@ function App() {
   //set loading everytime before the page is printed
   useLayoutEffect(() => {
     dispatch(authLoading());
+  }, []);
+
+  useEffect(() => {
+    if (appRef.current) {
+      eruda.init({ container: appRef.current, tool: ["console"] });
+    }
   }, []);
 
   //when components mount make the call to check authentication
@@ -77,7 +84,7 @@ function App() {
     return loading ? (
       <div>Loading...</div>
     ) : (
-      <div className="">
+      <div ref={appRef} className="app">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route
