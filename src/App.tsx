@@ -5,7 +5,7 @@ import Register from "./components/Register";
 import Error from "./components/Error";
 import Dashboard from "./components/Dashboard";
 import { useLocation } from "react-router";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { chatApi } from "./helpers/axiosInterceptor";
 import { useDispatch } from "react-redux";
 import {
@@ -26,7 +26,6 @@ interface AuthUserResponse {
 }
 
 function App() {
-  const appRef = useRef(null);
   const routePathname = useLocation().pathname;
   const { loading, authenticated } = useSelector(
     (state: RootState) => state.authState
@@ -39,8 +38,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (appRef.current) {
-      eruda.init({ container: appRef.current, tool: ["console"] });
+    const root = document.querySelector("body");
+    console.log(root);
+    if (root) {
+      eruda.init();
     }
   }, []);
 
@@ -84,7 +85,7 @@ function App() {
     return loading ? (
       <div>Loading...</div>
     ) : (
-      <div ref={appRef} className="app">
+      <div className="app">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route
