@@ -68,6 +68,9 @@ const Dashboard = () => {
     socket.on("logout", () => {
       logout();
     });
+    socket.on("connect_error", (error: unknown) => {
+      console.log(error);
+    });
     socket.on("chat error", ({ error }: { error: Error | string }) => {
       navigate(`/error/${error instanceof Error ? error.message : error}`);
     });
