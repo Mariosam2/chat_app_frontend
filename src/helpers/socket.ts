@@ -7,7 +7,6 @@ export const socket = io(import.meta.env.VITE_BASE_URL, {
   reconnectionAttempts: 5,
   reconnectionDelay: 500,
   reconnectionDelayMax: 1000,
-  transports: ["websocket"],
   transportOptions: {
     polling: {
       withCredentials: true,
