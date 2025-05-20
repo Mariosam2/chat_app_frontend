@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { clickResult, isSearching, setQuery } from "../slices/searchSlice";
 import { useSelector } from "react-redux";
 import type { RootState } from "..";
+import { setActiveChat } from "../slices/chatSlice";
 
 interface SearchResponse {
   success: boolean;
@@ -69,6 +70,7 @@ const Searchbar = ({ authUser }: SearchbarProps) => {
   const [debouncedSearch] = useState(() => lodash.debounce(search, 250));
 
   const handleClickOnResult = (result: User | MessageSearchResult) => {
+    dispatch(setActiveChat(null));
     dispatch(clickResult(result));
     dispatch(isSearching(false));
     dispatch(setQuery(""));

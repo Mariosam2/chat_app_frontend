@@ -63,7 +63,7 @@ const MessageComponent = ({
   useEffect(() => {
     if (message && clickedResult) {
       if (message.uuid === clickedResult.uuid) {
-        console.log(clickedResult.uuid, message.uuid);
+        //console.log(clickedResult.uuid, message.uuid);
         setActiveIndex(index);
         setTimeout(() => {
           messageRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -154,7 +154,15 @@ const MessageComponent = ({
     >
       <div
         ref={messageRef}
-        onContextMenu={() => setIsDeleting(!isDeleting)}
+        onContextMenu={() => {
+          setIsDeleting(!isDeleting);
+          if (messageRef.current) {
+            messageRef.current.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }
+        }}
         data-index={index}
         className={`message min-w-[80px] max-w-full xs:max-w-xs cursor-pointer text-sm md:text-base relative  w-max my-4 rounded-[20px] p-2  pb-4  pe-4 xs:p-4  xs:pb-6 xs:pe-6  ${
           message.status === "sent"
@@ -180,9 +188,9 @@ const MessageComponent = ({
         </span>
         <div
           ref={deletePanel}
-          className={`delete-panel flex w-max ${
+          className={`delete-panel flex flex-col w-max ${
             isDeleting ? "show" : ""
-          }  absolute left-5/6 z-10 top-0 text-sm font-light  bg-ms-dark p-3 pe-6 rounded-2xl text-ms-almost-white`}
+          }  absolute left-3/6 z-10 top-0 text-[10px] md:text-sm font-light  bg-ms-dark p-2 md:p-3 pe-6 rounded-2xl text-ms-almost-white`}
         >
           <XMarkIcon
             onClick={() => setIsDeleting(false)}
@@ -192,7 +200,9 @@ const MessageComponent = ({
 
           <div
             onClick={() => deleteForMe(message, authUser ? authUser?.uuid : "")}
-            className="delete-for-me bg-ms-muted mx-3  h-full cursor-pointer  p-2 rounded-xl flex items-center"
+            className={`delete-for-me bg-ms-muted  ${
+              message.status === "sent" ? "my-3" : "mb-3"
+            }  h-full cursor-pointer  p-2 rounded-xl flex items-center`}
           >
             Delete for me <TrashIcon className="size-4 ms-0.5" />
           </div>

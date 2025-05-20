@@ -6,7 +6,7 @@
 
 .login-panel,
 .register-panel {
-  background-image: url("../assets/bg-panel.png");
+  background-image: url("../assets/bg_panel.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

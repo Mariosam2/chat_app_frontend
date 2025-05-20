@@ -43,7 +43,7 @@ const SendMessage = () => {
     socket.emit("edit message", {
       room: activeChat?.uuid,
       message: messageToEdit?.uuid,
-      newMessage: message,
+      newMessage: message ? message : messageToEdit?.content,
       status: messageToEdit?.status,
     });
     dispatch(editingMessage({ isEditing: false, messageToEdit: null }));

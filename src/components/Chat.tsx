@@ -69,6 +69,10 @@ const Chat = ({ removeChat, chat, messageCreatedAt }: ChatProps) => {
       !searching &&
       !loading
     ) {
+      chatRef.current?.scrollIntoView({
+        behavior: "instant",
+        block: "start",
+      });
       dispatch(getMessages({ userUUID: authUser.uuid, chatUUID: chat.uuid }));
     }
   }, [activeChat]);

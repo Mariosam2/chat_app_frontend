@@ -30,9 +30,9 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const removeChat = (chat_uuid: string) => {
-    console.log(chat_uuid);
+    //console.log(chat_uuid);
     const updatedChats = chats.filter((chat) => chat.uuid !== chat_uuid);
-    console.log(updatedChats);
+    //console.log(updatedChats);
     dispatch(setChats(updatedChats));
   };
 
@@ -216,7 +216,7 @@ const Dashboard = () => {
 
   const ShowChats = (): JSX.Element => {
     return chats.length > 0 ? (
-      <div className="grid grid-cols-1 md:grid-rows-6 h-[120px]  md:min-h-[727px] md:h-[calc(90vh-20px)] overflow-y-auto border-b md:border-b-0 border-ms-dark">
+      <div className="grid grid-cols-1 md:grid-rows-6 h-[150px]  md:min-h-[727px] md:h-[calc(90vh-20px)] overflow-y-auto border-b md:border-b-0 border-ms-dark">
         {chats.map((chat, index) => {
           const createdAt: MessageOrChatCreatedAt = {
             messageCreatedAt: chat.lastMessage
