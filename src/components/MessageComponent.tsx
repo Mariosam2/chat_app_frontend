@@ -148,7 +148,7 @@ const MessageComponent = ({
 
   return (
     <div
-      className={`message-container px-4 ${
+      className={`message-container ${
         messageToEdit && messageToEdit.uuid === message.uuid ? "selected" : ""
       }`}
     >
@@ -156,7 +156,7 @@ const MessageComponent = ({
         ref={messageRef}
         onContextMenu={() => setIsDeleting(!isDeleting)}
         data-index={index}
-        className={`message min-w-[80px] cursor-pointer relative max-w-xs w-max my-4 rounded-[20px] pb-7 p-4 pe-8  ${
+        className={`message min-w-[80px] max-w-full xs:max-w-xs cursor-pointer text-sm md:text-base relative  w-max my-4 rounded-[20px] p-2  pb-4  pe-4 xs:p-4  xs:pb-6 xs:pe-6  ${
           message.status === "sent"
             ? "bg-ms-almost-white text-ms-dark me-auto"
             : "  bg-ms-secondary text-ms-almost-white ms-auto"
@@ -168,11 +168,11 @@ const MessageComponent = ({
               ? highlightMatch(message.content, query)
               : { __html: message.content }
           }
-          className="content"
+          className="content wrap-break-word"
         ></div>
 
         <span
-          className={`created-at absolute text-xs right-0 bottom-0 me-6 mb-1.5 ${
+          className={`created-at absolute text-[10px] md:text-xs right-0 bottom-0 me-4 mb-0.5 ${
             message.status === "sent" ? "text-ms-dark" : "text-ms-almost-white"
           }`}
         >

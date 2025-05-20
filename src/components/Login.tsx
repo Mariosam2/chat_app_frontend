@@ -29,6 +29,7 @@ const Login = () => {
   const [passwordError, setPasswordError] = useState("");
   const [email, setEmail] = useState("");
   const [passwordHidden, setPasswordHidden] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useLayoutEffect(() => {
     if (authenticated) {
@@ -47,6 +48,7 @@ const Login = () => {
 
   const submitLogin = async (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
+    setIsLoading(true);
     setEmailError("");
     setPasswordError("");
     setError("");
@@ -70,6 +72,9 @@ const Login = () => {
           chatApi.defaults.headers.common[
             "Authorization"
           ] = `Bearer ${res.data.token}`;
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 500);
           dispatch(authenticate(true));
           dispatch(saveAuthUser(res.data.authUser));
         }
@@ -88,6 +93,9 @@ const Login = () => {
         } else {
           setError(err.response.data.message);
         }
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 500);
       });
   };
 
@@ -152,7 +160,7 @@ const Login = () => {
                 id="email"
                 value={email}
               />
-              <span className="text-red-500 text-sm h-[20px] p-0.5">
+              <span className="text-red-500 text-[12px] xs:text-sm h-[20px] p-0.5">
                 {emailError}
               </span>
             </div>
@@ -176,7 +184,7 @@ const Login = () => {
 
                 <ShowEye />
               </div>
-              <span className="text-red-500 text-sm h-[20px] p-0.5">
+              <span className="text-red-500 text-[12px] xs:text h-[20px] p-0.5">
                 {error ? error : passwordError ? passwordError : ""}
               </span>
             </div>
@@ -184,7 +192,11 @@ const Login = () => {
             <button
               type="submit"
               id="submit"
-              className="px-6 w-full cursor-pointer py-3 mt-10 text-center font-medium bg-ms-secondary rounded-xl"
+              className={`px-6 ${
+                isLoading
+                  ? "brightness-90 pointer-events-none cursor-not-allowed"
+                  : ""
+              } w-full cursor-pointer py-3 mt-10 text-center font-medium bg-ms-secondary rounded-xl`}
             >
               Sign in
             </button>

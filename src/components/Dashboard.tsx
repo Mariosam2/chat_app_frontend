@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../index";
 import { chatApi } from "../helpers/axiosInterceptor";
 import { NavLink, useNavigate } from "react-router";
-import "./Dashboard.css";
 import Chat from "./Chat";
 import { type ChatType } from "../types";
 import logo from "../assets/logo.png";
@@ -31,9 +30,10 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const removeChat = (chat_uuid: string) => {
+    console.log(chat_uuid);
     const updatedChats = chats.filter((chat) => chat.uuid !== chat_uuid);
     console.log(updatedChats);
-    setChats(updatedChats);
+    dispatch(setChats(updatedChats));
   };
 
   interface LogoutResponse {
@@ -216,7 +216,7 @@ const Dashboard = () => {
 
   const ShowChats = (): JSX.Element => {
     return chats.length > 0 ? (
-      <div className="flex flex-col">
+      <div className="grid grid-cols-1 md:grid-rows-6 h-[120px]  md:min-h-[727px] md:h-[calc(90vh-20px)] overflow-y-auto border-b md:border-b-0 border-ms-dark">
         {chats.map((chat, index) => {
           const createdAt: MessageOrChatCreatedAt = {
             messageCreatedAt: chat.lastMessage
@@ -244,7 +244,7 @@ const Dashboard = () => {
   };
 
   return (
-    <section className="dashboard  min-h-screen md:grid md:grid-cols-10 md:grid-rows-10">
+    <section className="dashboard  min-h-[830px] h-screen flex flex-col md:grid md:grid-cols-10 md:grid-rows-10">
       <div className="top-panel flex flex-col md:col-span-10 md:row-span-1 col-start-1 md:grid md:grid-cols-10  bg-ms-darker border-b border-ms-dark items-center">
         <Profile logout={logout} authUser={authUser} />
         <NavLink
@@ -256,11 +256,11 @@ const Dashboard = () => {
         </NavLink>
         <Searchbar authUser={authUser ? authUser : null} />
       </div>
-      <div className="chats-panel overflow-y-auto relative  col-span-4 row-span-9  row-start-2 bg-ms-darker border-e border-ms-dark">
+      <div className="chats-panel relative  md:col-span-4 md:row-span-9  md:row-start-2 bg-ms-darker border-e border-ms-dark">
         <div className="sticky w-full top-0 h-[20px] bg-ms-dark"></div>
         <ShowChats />
       </div>
-      <div className="chat-panel flex flex-col col-span-6 row-span-9 row-start-2  bg-ms-darker">
+      <div className="chat-panel flex flex-col grow md:col-span-6 md:row-span-9 md:row-start-2  bg-ms-darker">
         <Messages />
         <SendMessage />
       </div>

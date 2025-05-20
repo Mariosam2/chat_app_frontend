@@ -25,6 +25,7 @@ const Register = () => {
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (passwordHidden) {
@@ -78,6 +79,7 @@ const Register = () => {
 
   const submitRegister = async (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
+    setIsLoading(true);
     setError("");
     setUsernameError("");
     setEmailError("");
@@ -105,10 +107,13 @@ const Register = () => {
           setEmail("");
           setPassword("");
           setConfirmPassword("");
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 500);
         }
       })
       .catch((err) => {
-        console.log(err);
+        //console.log(err);
         if (err.response?.data.invalidField === "username") {
           setUsernameError(err.response.data.message);
         } else if (err.response?.data.invalidField === "email") {
@@ -125,6 +130,9 @@ const Register = () => {
         } else {
           setError(err.response?.data.message);
         }
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 500);
       });
   };
 
@@ -199,7 +207,7 @@ const Register = () => {
                 value={username}
                 required
               />
-              <span className="text-red-500 text-sm h-[20px]">
+              <span className="text-red-500 text-[12px] xs:text h-[20px]">
                 {usernameError}
               </span>
             </div>
@@ -219,7 +227,7 @@ const Register = () => {
                 value={email}
                 required
               />
-              <span className="text-red-500 text-sm h-[20px]">
+              <span className="text-red-500 text-[12px] xs:text h-[20px]">
                 {emailError}
               </span>
             </div>
@@ -267,7 +275,7 @@ const Register = () => {
 
                 <ShowConfirmPasswordEye />
               </div>
-              <span className="text-red-500  col-span-2  text-sm min-h-[20px]">
+              <span className="text-red-500  col-span-2 text-[12px] xs:text min-h-[20px]">
                 {error.trim() !== ""
                   ? error
                   : passwordError.trim() !== ""
@@ -279,7 +287,11 @@ const Register = () => {
             <button
               type="submit"
               id="submit"
-              className="px-6 w-full py-3 cursor-pointer mt-10 text-center font-medium bg-ms-secondary rounded-xl"
+              className={`px-6 ${
+                isLoading
+                  ? "brightness-90 pointer-events-none cursor-not-allowed"
+                  : ""
+              } w-full py-3 cursor-pointer mt-10 text-center font-medium bg-ms-secondary rounded-xl`}
             >
               Sign up
             </button>
@@ -294,7 +306,7 @@ const Register = () => {
       </div>
       <div className="registered">
         <div
-          className={`registered-popup z-10 top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] p-4 rounded-2xl text-ms-almost-white fixed w-sm bg-ms-dark ${
+          className={`registered-popup z-10 top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] p-4 rounded-2xl text-ms-almost-white fixed  w-sm max-w-full bg-ms-dark ${
             registered ? "show" : ""
           }`}
         >

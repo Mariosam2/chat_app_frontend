@@ -13,6 +13,7 @@
   --color-ms-layover: rgba(10, 10, 10, 0.5);
   --breakpoint-xxl: 1650px;
   --breakpoint-xxs: 380px;
+  --breakpoint-xs: 586px;
 }
 *::-webkit-scrollbar {
   background-color: transparent;

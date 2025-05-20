@@ -1,8 +1,4 @@
 .messages-container {
-  overflow-y: scroll;
-}
-
-.messages-container {
   background-image: url("../assets/chat_bg.png");
   background-size: 20%;
   background-repeat: repeat;

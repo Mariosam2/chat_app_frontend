@@ -8,6 +8,7 @@ import { socket } from "../helpers/socket";
 import type { Message } from "../types";
 import { useDispatch } from "react-redux";
 import { addMessage, editMessage, removeMessage } from "../slices/messageSlice";
+import "./Messages.css";
 
 const Messages = () => {
   const dispatch = useDispatch();
@@ -72,7 +73,7 @@ const Messages = () => {
     return !loading && messages.length > 0 ? (
       <div
         ref={messageContainer}
-        className="messages-container flex flex-col p-20 pb-4  h-[calc(90vh-60px)] border-b border-ms-dark "
+        className="messages-container flex  grow-1 md:grow-0 flex-col p-4 xl:p-20 pb-4 h-[400px]  md:h-[calc(90vh-60px)] md:min-h-[680px] border-b border-ms-dark overflow-y-scroll overflow-x-hidden "
       >
         {messages.map((message, index) => {
           const messageCreatedAt = getHoursMinutesFormatted(message.created_at);
@@ -87,9 +88,11 @@ const Messages = () => {
         })}
       </div>
     ) : loading ? (
-      <div className="h-[calc(90vh-60px)]">Loading...</div>
+      <div className="h-[400px] grow-1 md:grow-0 md:h-[calc(90vh-60px)] md:min-h-[680px]">
+        Loading...
+      </div>
     ) : (
-      <div className="h-[calc(90vh-60px)] grid place-items-center text-ms-almost-white">
+      <div className=" h-[400px] grow-1 md:grow-0 md:h-[calc(90vh-60px)] md:min-h-[680px] grid place-items-center text-ms-almost-white">
         <img className="no-messages" src={noMessagesImg} alt="" />
       </div>
     );

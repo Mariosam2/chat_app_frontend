@@ -76,7 +76,7 @@ const SendMessage = () => {
     <div
       className={`send-message ${
         activeChat ? "block" : "hidden"
-      }  relative bg-ms-dark  max-w-full h-[50px] flex justify-end items-center pe-2 my-auto mx-16`}
+      }  relative bg-ms-dark  max-w-full flex justify-end items-center pe-2 my-2 mx-2 sm:mx-16`}
     >
       <div className="w-12 p-1 cursor-pointer">
         <FaceSmileIcon className="size-8 mx-auto text-ms-muted" />
@@ -85,7 +85,7 @@ const SendMessage = () => {
         onKeyDown={handleSpaceKey}
         onChange={handleMessageChange}
         placeholder="Write message..."
-        className="bg-ms-darker focus:outline-none text-ms-almost-white h-[70%] w-full p-2  ms-auto"
+        className="bg-ms-darker focus:outline-none text-ms-almost-white h-[30px] my-2 w-full p-2  ms-auto"
         type="text"
         name="message"
         id="message"

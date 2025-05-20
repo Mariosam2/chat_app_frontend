@@ -96,15 +96,17 @@ const Searchbar = ({ authUser }: SearchbarProps) => {
   const ShowUsers = () => {
     if (searchResults && searchResults.users.length > 0) {
       return (
-        <div className="users  px-4 col-span-1">
-          <h2 className="text-2xl mb-8 ps-2 font-semibold">Discover</h2>
-          <div className="flex flex-wrap">
+        <div className="users  p-4 md:px-2 xl:px-4">
+          <h2 className="text-xl xxs:text-2xl mb-6 xxs:mb-8 ps-2 font-semibold">
+            Discover
+          </h2>
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-1 xl:grid-cols-2 max-h-[200px] overflow-y-auto">
             {searchResults?.users?.map((result, index) => {
               return (
                 <div
                   key={index}
                   onClick={() => handleClickOnResult(result)}
-                  className="result  h-fit mb-auto w-1/2 p-2 flex items-center"
+                  className="result  h-fit flex items-center p-2"
                 >
                   <img
                     className="w-[40px] aspect-square  rounded-full"
@@ -132,17 +134,23 @@ const Searchbar = ({ authUser }: SearchbarProps) => {
       return (
         <div
           className={`messages ${
-            searchResults.users.length > 0 ? "border-s border-ms-muted" : ""
-          } px-4 col-span-1`}
+            searchResults.users.length > 0 ? "border-t border-ms-muted" : ""
+          } p-4 md:px-2 xl:px-4 `}
         >
-          <h2 className="text-2xl mb-8 ps-2 font-semibold">Your chats</h2>
-          <div className="flex flex-wrap">
+          <h2 className="text-xl xxs:text-2xl mb-6 xxs:mb-8 ps-2 font-semibold">
+            Your chats
+          </h2>
+          <div className="grid grid-cols-1 xs:grid-cols-2 max-h-[200px] overflow-y-auto md:grid-cols-1 xl:grid-cols-2">
             {searchResults?.messages?.map((result, index) => {
               return (
                 <div
                   key={index}
                   onClick={() => handleClickOnResult(result)}
-                  className="result h-fit mb-auto w-1/2 p-2 "
+                  className={`result p-2  py-4 me-2 xs:me-0 md:me-2 xl:me-0 ${
+                    index === 0
+                      ? "border-y xs:border-y-0 md:border-y xl:border-y-0"
+                      : "border-b xs:border-b-0 md:border-b xl:border-b-0"
+                  }  border-ms-muted`}
                 >
                   <div className="flex items-center pb-1">
                     <img
@@ -162,7 +170,7 @@ const Searchbar = ({ authUser }: SearchbarProps) => {
                       result.content,
                       query
                     )}
-                    className="content font-light pt-2"
+                    className="content font-light pt-2 wrap-break-word"
                   ></div>
                 </div>
               );
@@ -193,13 +201,7 @@ const Searchbar = ({ authUser }: SearchbarProps) => {
     if (searchResults !== null) {
       return (
         <div
-          className={`search-results absolute z-10 left-0 top-[100%] translate-y-[5px]  bg-ms-dark grid ${
-            searchResults &&
-            searchResults.users.length > 0 &&
-            searchResults.messages.length > 0
-              ? "grid-cols-2 w-full"
-              : "grid-cols-1 w-1/2"
-          } text-ms-almost-white py-4 rounded-2xl`}
+          className={`search-results absolute z-10 left-0 top-[100%] translate-y-[5px]  bg-ms-dark w-full flex flex-col text-ms-almost-white py-4 rounded-2xl`}
         >
           <ShowUsers />
           <ShowMessages />
@@ -211,19 +213,21 @@ const Searchbar = ({ authUser }: SearchbarProps) => {
 
   return (
     <>
-      <div className="searchbar h-[40px] col-span-1 row-span-1 row-start-2 md:row-start-1 md:col-start-7 md:col-span-4 md:me-4 lg:col-start-6  lg:me-0  2xl:col-start-4 bg-ms-dark rounded-xl p-2 text-ms-muted flex items-center relative ">
-        <MagnifyingGlassIcon className="size-5 me-1 " />
-        <input
-          onChange={handleQueryChange}
-          className="p-1 flex-grow focus:outline-none"
-          placeholder="Search..."
-          type="text"
-          name="search"
-          id="search"
-          autoComplete="off"
-          value={query}
-        />
-        <ShowSearchResults />
+      <div className="searchbar-container px-2 pb-4 md:pb-0 xxs:px-6 md:px-4 w-full  col-span-1 row-span-1 row-start-2 md:row-start-1 md:col-start-7 md:col-span-4 md:me-4 lg:col-span-4 lg:col-start-6 lg:me-0  2xl:col-start-5">
+        <div className="searchbar h-[40px]    bg-ms-dark rounded-xl p-2 text-ms-muted flex items-center relative ">
+          <MagnifyingGlassIcon className="size-5 me-1 " />
+          <input
+            onChange={handleQueryChange}
+            className="p-1 flex-grow focus:outline-none"
+            placeholder="Search..."
+            type="text"
+            name="search"
+            id="search"
+            autoComplete="off"
+            value={query}
+          />
+          <ShowSearchResults />
+        </div>
       </div>
     </>
   );

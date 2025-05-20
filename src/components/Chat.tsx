@@ -113,12 +113,12 @@ const Chat = ({ removeChat, chat, messageCreatedAt }: ChatProps) => {
       ref={chatRef}
       onContextMenu={() => setIsDeleting(true)}
       onClick={setActive}
-      className={`chat bg-ms-darker relative row-span-1 py-4 flex items-center px-4 cursor-pointer ${
+      className={`chat bg-ms-darker h-[120px] relative row-span-1 py-4 flex items-center px-4 cursor-pointer ${
         activeChat?.uuid === chat.uuid ? "active" : ""
       }`}
     >
       <div className="receiver  ">
-        <div className="profile-picture max-w-[60px] pe-1.5 ">
+        <div className="profile-picture w-[60px] pe-1.5 ">
           <img
             className="rounded-full"
             src={import.meta.env.VITE_BASE_URL + chat.receiver?.profile_picture}
@@ -131,10 +131,12 @@ const Chat = ({ removeChat, chat, messageCreatedAt }: ChatProps) => {
           {chat.receiver?.username}
         </h5>
         <span className="text-ms-muted block font-light text-sm pt-2 ">
-          {chat.lastMessage?.content}
+          {chat.lastMessage?.content && chat.lastMessage?.content.length > 40
+            ? chat.lastMessage?.content.substring(0, 40) + "..."
+            : chat.lastMessage?.content}
         </span>
       </div>
-      <div className="last-message font-light self-start pt-4">
+      <div className="last-message font-light self-end pb-2">
         <span className="created-at  text-ms-almost-white">
           {messageCreatedAt}
         </span>
