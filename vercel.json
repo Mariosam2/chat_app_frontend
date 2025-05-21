@@ -10,7 +10,7 @@
     },
     {
       "source": "/socket.io/(.*)",
-      "destination": "wss://chatappbackend-production-3fab.up.railway.app/socket.io/$1"
+      "destination": "https://chatappbackend-production-3fab.up.railway.app/socket.io/$1"
     }
   ]
 }

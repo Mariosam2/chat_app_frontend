@@ -1,6 +1,7 @@
 import io from "socket.io-client";
 
-export const socket = io("/socket.io", {
+export const socket = io("", {
+  path: "/socket.io",
   secure: true,
   autoConnect: false,
   reconnection: true,
