@@ -33,9 +33,13 @@ const SendMessage = () => {
     }
   };
 
-  const handleSpaceKey = (e: React.KeyboardEvent) => {
+  const handleEnterKey = (e: React.KeyboardEvent) => {
     if (e.code === "Enter") {
-      sendMessage();
+      if (!isEditing) {
+        sendMessage();
+      } else {
+        editMessage();
+      }
     }
   };
 
@@ -82,7 +86,7 @@ const SendMessage = () => {
         <FaceSmileIcon className="size-8 mx-auto text-ms-muted" />
       </div>
       <input
-        onKeyDown={handleSpaceKey}
+        onKeyDown={handleEnterKey}
         onChange={handleMessageChange}
         placeholder="Write message..."
         className="bg-ms-darker focus:outline-none text-ms-almost-white h-[30px] my-2 w-full p-2  ms-auto"
