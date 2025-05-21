@@ -82,9 +82,9 @@ const Home = () => {
     });
     tl.fromTo(
       ".feature#first",
-      { x: 50, opacity: 0 },
+      { y: 50, opacity: 0 },
       {
-        x: 0,
+        y: 0,
         delay: 0.2,
         opacity: 1,
         duration: 0.35,
@@ -92,9 +92,9 @@ const Home = () => {
     );
     tl.fromTo(
       ".feature#second",
-      { x: 50, opacity: 0 },
+      { y: 50, opacity: 0 },
       {
-        x: 0,
+        y: 0,
         delay: 0.2,
         opacity: 1,
         duration: 0.35,
@@ -102,9 +102,9 @@ const Home = () => {
     );
     tl.fromTo(
       ".feature#third",
-      { x: 50, opacity: 0 },
+      { y: 50, opacity: 0 },
       {
-        x: 0,
+        y: 0,
         delay: 0.2,
         opacity: 1,
         duration: 0.35,
@@ -127,8 +127,9 @@ const Home = () => {
   return (
     <section className="home">
       <Nav />
+
       <section className="jumbo bg-ms-dark relative">
-        <div className="glow right"></div>
+        <div className="glow left "></div>
         <NetworkSVG />
         <div className=" max-w-2xl mx-auto text-ms-almost-white pt-52">
           <h1 className="heading text-center font-bold text-4xl md:text-[64px] ">
