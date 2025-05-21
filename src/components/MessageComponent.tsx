@@ -192,7 +192,7 @@ const MessageComponent = ({
             isDeleting ? "show" : ""
           }  absolute ${
             message.status === "sent" ? "left-3/6" : "right-3/6"
-          }  z-10 top-0 text-[10px] md:text-sm font-light  bg-ms-dark p-2 md:p-3 pe-6 rounded-2xl text-ms-almost-white`}
+          }  z-10 top-0 text-[10px] md:text-sm font-light  bg-ms-dark p-2  pe-6  rounded-2xl text-ms-almost-white `}
         >
           <XMarkIcon
             onClick={() => setIsDeleting(false)}
