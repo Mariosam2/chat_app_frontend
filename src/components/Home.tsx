@@ -18,12 +18,116 @@ import {
 import NetworkSVG from "./NetworkSVG";
 import Nav from "./Nav";
 import { NavLink } from "react-router";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+// ScrollSmoother requires ScrollTrigger
+import { ScrollSmoother } from "gsap/ScrollSmoother";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollSmoother);
 
 const Home = () => {
+  useGSAP(() => {
+    ScrollSmoother.create({
+      wrapper: "#root",
+      content: ".home",
+    });
+
+    gsap.fromTo(
+      ".jumbo .preview",
+      { y: 20 },
+      {
+        y: 100,
+        scrollTrigger: {
+          trigger: ".jumbo .preview",
+          start: "bottom bottom",
+          scrub: true,
+        },
+      }
+    );
+
+    gsap.fromTo(
+      ".sponsor",
+      { x: -20, opacity: 0 },
+      {
+        duration: 0.35,
+        x: 0,
+        opacity: 1,
+        scrollTrigger: {
+          trigger: ".features-content",
+          start: "center bottom",
+        },
+      }
+    );
+
+    gsap.fromTo(
+      '.features-content > [class^="features"]:not(.feature)',
+      { y: 20, opacity: 0 },
+      {
+        duration: 0.35,
+        y: 0,
+        opacity: 1,
+        scrollTrigger: {
+          trigger: ".features-content",
+          start: "center bottom",
+        },
+      }
+    );
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".feature-container",
+        start: "top bottom",
+      },
+    });
+    tl.fromTo(
+      ".feature#first",
+      { x: 50, opacity: 0 },
+      {
+        x: 0,
+        delay: 0.2,
+        opacity: 1,
+        duration: 0.35,
+      }
+    );
+    tl.fromTo(
+      ".feature#second",
+      { x: 50, opacity: 0 },
+      {
+        x: 0,
+        delay: 0.2,
+        opacity: 1,
+        duration: 0.35,
+      }
+    );
+    tl.fromTo(
+      ".feature#third",
+      { x: 50, opacity: 0 },
+      {
+        x: 0,
+        delay: 0.2,
+        opacity: 1,
+        duration: 0.35,
+      }
+    );
+
+    gsap.fromTo(
+      ".footer",
+      { opacity: 0 },
+      {
+        opacity: 1,
+        duration: 0.5,
+        scrollTrigger: {
+          trigger: ".footer",
+          start: "center bottom",
+        },
+      }
+    );
+  });
   return (
-    <>
+    <section className="home">
       <Nav />
-      <section className="jumbo bg-ms-dark">
+      <section className="jumbo bg-ms-dark relative">
         <div className="glow right"></div>
         <NetworkSVG />
         <div className=" max-w-2xl mx-auto text-ms-almost-white pt-52">
@@ -60,7 +164,7 @@ const Home = () => {
               />
             </svg>
           </NavLink>
-          <div className="preview mx-4 relative w-fit  translate-y-[80px] rounded-2xl">
+          <div className="preview mx-4 relative w-fit  rounded-2xl">
             <img className="preview-img  rounded-2xl" src={previewImg} alt="" />
           </div>
         </div>
@@ -77,8 +181,8 @@ const Home = () => {
             <img src={savannahLogo} alt="" />
           </div>
         </div>
-        <div className="container pt-24 mx-auto  flex flex-col items-center">
-          <h1 className="text-3xl md:text-4xl text-center lg:text-5xl font-bold text-ms-dark">
+        <div className="features-content container pt-24 mx-auto  flex flex-col items-center">
+          <h1 className="features-heading text-3xl md:text-4xl text-center lg:text-5xl font-bold text-ms-dark">
             Some of our features that will help you
           </h1>
           <p className="features-description text-ms-muted text-center font-medium pt-10 md:pt-12 lg:pt-16 max-w-2xl">
@@ -88,8 +192,8 @@ const Home = () => {
             Unde aspernatur molestias accusantium nam quam tempore recusandae!
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pt-32 gap-2">
-            <div className="feature p-6">
+          <div className="feature-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pt-32 gap-2">
+            <div className="feature p-6" id="first">
               <div className="feature-icon communication size-10">
                 <ChatBubbleOvalLeftEllipsisIcon className="w-full p-1 fill-ms-green" />
               </div>
@@ -102,7 +206,7 @@ const Home = () => {
                 alias.
               </p>
             </div>
-            <div className="feature p-6">
+            <div className="feature p-6 " id="second">
               <div className="feature-icon community size-10">
                 <UserGroupIcon className="w-full p-1 fill-ms-yellow" />
               </div>
@@ -113,7 +217,7 @@ const Home = () => {
                 alias.
               </p>
             </div>
-            <div className="feature p-6">
+            <div className="feature p-6" id="third">
               <div className="feature-icon discover size-10">
                 <GlobeAltIcon className="w-full p-1 fill-ms-cyan" />
               </div>
@@ -174,7 +278,7 @@ const Home = () => {
           </span>
         </div>
       </section>
-    </>
+    </section>
   );
 };
 
