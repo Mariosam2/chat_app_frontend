@@ -1,8 +1,7 @@
 import io from "socket.io-client";
 
-export const socket = io("chatappbackend-production-3fab.up.railway.app", {
+export const socket = io(import.meta.env.VITE_BASE_URL, {
   port: "3000",
-  path: "/socket.io",
   secure: true,
   autoConnect: false,
   reconnection: true,

@@ -1,10 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://chatappbackend-production-3fab.up.railway.app/api/$1"
-    },
-    {
       "source": "/(.*)",
       "destination": "/"
     }

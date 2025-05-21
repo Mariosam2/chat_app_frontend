@@ -93,9 +93,13 @@ const Register = () => {
     };
 
     await axios
-      .post<RegisterReponse>("/api/auth/register", userToRegister, {
-        withCredentials: true,
-      })
+      .post<RegisterReponse>(
+        import.meta.env.VITE_BASE_URL + "/api/auth/register",
+        userToRegister,
+        {
+          withCredentials: true,
+        }
+      )
       .then((res) => {
         if (res.data.success) {
           setRegistered(true);
