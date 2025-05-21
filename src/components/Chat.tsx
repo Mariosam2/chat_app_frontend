@@ -77,7 +77,9 @@ const Chat = ({ chat, messageCreatedAt }: ChatProps) => {
   }, [activeChat]);
 
   const setActive = () => {
-    dispatch(setActiveChat({ uuid: chat.uuid, receiver: chat.receiver }));
+    if (chat.uuid !== activeChat?.uuid) {
+      dispatch(setActiveChat({ uuid: chat.uuid, receiver: chat.receiver }));
+    }
   };
 
   interface DeleteForMeResponse {

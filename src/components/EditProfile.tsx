@@ -183,7 +183,7 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
   return (
     <>
       <div
-        className={`edit-panel w-md relative bg-ms-dark text-ms-almost-white p-8 rounded-xl z-2 ${
+        className={`edit-panel w-full xxs:w-sm  xs:w-md relative bg-ms-dark text-ms-almost-white p-8 rounded-xl z-2 ${
           isEditing ? "show" : ""
         }`}
       >
@@ -198,7 +198,7 @@ const EditProfile = ({ authUser }: EditProfileProps) => {
         >
           <div className="profile-picture">
             <img
-              className="w-[250px] aspect-square object-cover  rounded-full mx-auto"
+              className="w-[180px] xs:w-[250px] aspect-square object-cover  rounded-full mx-auto"
               src={
                 selectedImage
                   ? URL.createObjectURL(selectedImage)
