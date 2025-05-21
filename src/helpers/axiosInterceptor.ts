@@ -23,18 +23,28 @@ chatApi.interceptors.response.use(
     ) {
       //try to refresh the token and set it as authorization header
       return chatApi
-        .get<RefreshTokenResponse>("/api/auth/refresh-token")
+        .get<RefreshTokenResponse>("/api/auth/refresh-token", {
+          withCredentials: true,
+        })
         .then((res) => {
           //console.log(res);
           if (res.data.success) {
             //set the new token in an authorization header
             //console.log(res.data);
             const newAccessToken = res.data.token;
+            //console.log(newAccessToken);
             chatApi.defaults.headers.common[
               "Authorization"
             ] = `Bearer ${newAccessToken}`;
+            //console.log(err.config);
 
-            return chatApi.request(err.config);
+            return chatApi.request({
+              ...err.config,
+              headers: {
+                ...err.config.headers,
+                Authorization: `Bearer ${newAccessToken}`,
+              },
+            });
           }
         })
         .catch((err) => {

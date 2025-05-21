@@ -19,7 +19,7 @@ import RequireNoAuth from "./components/RequireNoAuth";
 import { useSelector } from "react-redux";
 import type { RootState } from ".";
 import type { User } from "./types";
-import eruda from "eruda";
+
 interface AuthUserResponse {
   success: boolean;
   authUser: User;
@@ -35,14 +35,6 @@ function App() {
   //set loading everytime before the page is printed
   useLayoutEffect(() => {
     dispatch(authLoading());
-  }, []);
-
-  useEffect(() => {
-    const root = document.querySelector("body");
-    console.log(root);
-    if (root) {
-      eruda.init();
-    }
   }, []);
 
   //when components mount make the call to check authentication

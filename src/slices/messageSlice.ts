@@ -40,6 +40,7 @@ export const getMessages = createAsyncThunk(
       );
       return messages.data;
     } catch (err: unknown) {
+      console.log(err);
       if (err && isAxiosError(err)) {
         return thunkAPI.rejectWithValue({
           response: {
