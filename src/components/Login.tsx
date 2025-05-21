@@ -59,9 +59,13 @@ const Login = () => {
       password,
     };
     await axios
-      .post<LoginResponse>("/api/auth/login", userToLogIn, {
-        withCredentials: true,
-      })
+      .post<LoginResponse>(
+        import.meta.env.VITE_BASE_URL + "/api/auth/login",
+        userToLogIn,
+        {
+          withCredentials: true,
+        }
+      )
       .then((res) => {
         if (res.data.success) {
           //save the token and redirect to dashboard
