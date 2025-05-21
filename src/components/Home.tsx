@@ -77,7 +77,7 @@ const Home = () => {
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: ".feature-container",
-        start: "top bottom",
+        start: "center bottom",
       },
     });
     tl.fromTo(
